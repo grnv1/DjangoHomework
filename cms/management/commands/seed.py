@@ -1,0 +1,89 @@
+"""示例数据脚本。
+
+用法：python manage.py seed
+创建演示用的用户、栏目、标签与文章，便于快速体验系统功能。
+"""
+
+from datetime import timedelta
+
+from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand
+from django.utils import timezone
+
+from cms.forms import apply_role
+from cms.models import Category, Item, OperationLog, Tag
+
+
+class Command(BaseCommand):
+    help = "创建演示用示例数据（用户、栏目、标签、文章）"
+
+    def handle(self, *args, **options):
+        # ---------- 用户 ----------
+        admin = self._create_user("admin", "admin12345", "admin@bjtu.edu.cn", "superuser")
+        editor = self._create_user("wang", "wang12345", "wang@bjtu.edu.cn", "editor")
+        self._create_user("zhangsan", "zhangsan123", "zhangsan@example.com", "user")
+
+        # ---------- 栏目 ----------
+        category_data = [
+            ("教学动态", "教学安排与课堂改革信息"),
+            ("科研成果", "各学科科研团队最新成果"),
+            ("校园通知", "学校公告与通知事项"),
+        ]
+        categories = {}
+        for name, desc in category_data:
+            category, _ = Category.objects.get_or_create(
+                name=name,
+                defaults={"description": desc, "created_by": admin, "updated_by": admin},
+            )
+            categories[name] = category
+
+        # ---------- 标签 ----------
+        tags = {name: Tag.objects.get_or_create(name=name)[0] for name in ["科研", "就业", "招生"]}
+
+        # ---------- 文章 ----------
+        now = timezone.now()
+        articles = [
+            # (标题, 栏目, 标签, 作者, 发表时间)；发表时间为 None 表示草稿
+            ("交大轨道交通新型轴承技术取得阶段性突破", "科研成果", "科研", editor,
+             now - timedelta(days=8)),
+            ("智能交通系统在城市道路中的应用研究", "科研成果", "科研", editor,
+             now - timedelta(days=16)),
+            ("2026年秋季学期本科教学安排", "教学动态", None, admin, now - timedelta(days=3)),
+            # 定时发布：发表时间为未来时间
+            ("2026年硕士研究生招生简章", "校园通知", "招生", admin, now + timedelta(days=5)),
+            # 草稿：发表时间为空
+            ("大学生就业指导讲座预告（草稿）", "校园通知", "就业", editor, None),
+        ]
+        for title, category_name, tag_name, author, publish_time in articles:
+            item, created = Item.objects.get_or_create(
+                title=title,
+                defaults={
+                    "content": f"这里是《{title}》的正文内容示例，用于演示系统功能。",
+                    "category": categories[category_name],
+                    "author": author,
+                    "created_by": author,
+                    "updated_by": author,
+                    "status": Item.Status.PUBLISHED if publish_time else Item.Status.DRAFT,
+                    "publish_time": publish_time,
+                },
+            )
+            if created:
+                if tag_name:
+                    item.tags.add(tags[tag_name])
+                description = f"创建文章《{item.title}》"
+                OperationLog.log(author, OperationLog.Action.CREATE, item, description)
+
+        self.stdout.write(self.style.SUCCESS("示例数据创建完成。"))
+        self.stdout.write("超级管理员：admin / admin12345")
+        self.stdout.write("内容编辑：wang / wang12345")
+        self.stdout.write("普通用户：zhangsan / zhangsan123")
+
+    def _create_user(self, username, password, email, role):
+        """创建或更新演示用户并应用角色。"""
+        user, _ = User.objects.get_or_create(username=username)
+        user.set_password(password)
+        user.email = email
+        user.is_active = True
+        apply_role(user, role)
+        user.save()
+        return user
