@@ -1,0 +1,34 @@
+{% extends "cms/base.html" %}
+
+{% block title %}我的收藏 - CMS 内容管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="card">
+        <h2>我的收藏（{{ page_obj.paginator.count }} 篇）</h2>
+    </section>
+
+    {% for fav in page_obj %}
+    <article class="item-card">
+        <h3><a href="{% url 'cms:item_detail' fav.item.id %}">{{ fav.item.title }}</a></h3>
+        <div class="item-meta">
+            <span class="badge">{{ fav.item.category.name }}</span>
+            <span>作者：{{ fav.item.author.username }}</span>
+            <span>发表时间：{{ fav.item.publish_time|date:"Y-m-d H:i" }}</span>
+            <span>收藏时间：{{ fav.created_at|date:"Y-m-d" }}</span>
+        </div>
+        <div style="margin-top:10px;">
+            <form method="post" action="{% url 'cms:favorite_toggle' fav.item.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger-outline">取消收藏</button>
+            </form>
+            <a href="{% url 'cms:item_detail' fav.item.id %}" class="btn btn-outline">查看</a>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty">还没有收藏任何文章。</div>
+    {% endfor %}
+
+    {% include "cms/_pagination.html" %}
+</div>
+{% endblock %}

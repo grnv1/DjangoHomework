@@ -1,0 +1,41 @@
+{% extends "cms/base.html" %}
+
+{% block title %}注册 - CMS 内容管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-wrap">
+        <div class="card">
+            <h1>用户注册</h1>
+            {% if form.non_field_errors %}
+            <div class="form-error" style="margin-bottom:10px;">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <form method="post" action="{% url 'cms:register' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_username">用户名</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}<div class="form-error">{{ form.username.errors }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_email">邮箱（选填）</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    <label for="id_password1">密码</label>
+                    {{ form.password1 }}
+                    {% if form.password1.help_text %}<p class="form-help">{{ form.password1.help_text|safe }}</p>{% endif %}
+                    {% if form.password1.errors %}<div class="form-error">{{ form.password1.errors }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_password2">确认密码</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}<div class="form-error">{{ form.password2.errors }}</div>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">注册</button>
+            </form>
+            <p class="auth-footer">已有账号？<a href="{% url 'cms:login' %}">直接登录</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

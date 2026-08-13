@@ -1,0 +1,125 @@
+/* CMS 管理后台专用样式 */
+:root {
+    --admin-header: #263238;
+    --admin-nav: #37474f;
+    --admin-text: #eceff1;
+}
+
+.admin-header {
+    background: var(--admin-header);
+    color: var(--admin-text);
+    padding: 12px 0;
+}
+.admin-header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.admin-site-name { font-size: 18px; font-weight: 700; }
+.admin-header .nav a { color: #b0bec5; text-decoration: none; font-size: 14px; margin-left: 18px; }
+.admin-header .nav a:hover { color: #fff; }
+
+.admin-nav {
+    background: var(--admin-nav);
+    padding: 0;
+}
+.admin-nav .container { display: flex; }
+.admin-nav a {
+    color: #cfd8dc;
+    text-decoration: none;
+    padding: 12px 22px;
+    font-size: 14px;
+}
+.admin-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.admin-nav a.active { background: var(--primary); color: #fff; }
+
+.admin-main { padding: 24px 0 48px; }
+
+/* 工具栏：页面标题 + 操作按钮 */
+.admin-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.admin-toolbar h1 { font-size: 20px; }
+
+/* 数据表格 */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.admin-table th, .admin-table td {
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 14px;
+    border-bottom: 1px solid var(--border);
+}
+.admin-table th {
+    background: #fafbfc;
+    color: var(--text-light);
+    font-weight: 600;
+}
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table tr:hover td { background: #fafbff; }
+
+/* 状态徽章 */
+.status-badge { padding: 3px 10px; border-radius: 10px; font-size: 12px; }
+.status-published { background: #ecfdf5; color: #059669; }
+.status-draft { background: #f3f4f6; color: #6b7280; }
+
+/* 表格内操作链接 */
+.table-actions a { font-size: 13px; margin-right: 12px; text-decoration: none; }
+.link-edit { color: var(--primary); }
+.link-delete { color: var(--danger); }
+.table-actions .disabled {
+    color: #b0b8c0;
+    cursor: not-allowed;
+    margin-right: 12px;
+    font-size: 13px;
+}
+
+/* 操作日志类型徽章 */
+.log-action { padding: 3px 10px; border-radius: 10px; font-size: 12px; }
+.log-create { background: #ecfdf5; color: #059669; }
+.log-update { background: #eef4ff; color: var(--primary); }
+.log-delete { background: #fdecea; color: var(--danger); }
+
+/* 管理端表单 */
+.admin-form { max-width: 720px; }
+.admin-form .form-group label { font-size: 14px; margin-bottom: 4px; }
+.admin-form input[type="text"], .admin-form input[type="datetime-local"],
+.admin-form input[type="password"], .admin-form input[type="email"],
+.admin-form select, .admin-form textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+}
+.admin-form textarea { min-height: 220px; resize: vertical; }
+.admin-form .form-group { margin-bottom: 16px; }
+.form-help { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+.form-actions { display: flex; gap: 10px; }
+
+/* 统计卡片 */
+.stat-grid { display: flex; gap: 16px; margin-bottom: 20px; }
+.stat-card { flex: 1; text-align: center; padding: 20px; }
+.stat-card .num { font-size: 30px; font-weight: 700; color: var(--primary); }
+.stat-card .label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+
+/* 权限提示条 */
+.perm-note {
+    background: #eef4ff;
+    border: 1px solid #c7dbff;
+    color: var(--primary-dark);
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 16px;
+}

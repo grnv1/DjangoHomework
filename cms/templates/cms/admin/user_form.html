@@ -1,0 +1,63 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>{{ title }}</h1>
+        <a href="{% url 'admin_cms:user_list' %}" class="btn btn-outline">返回列表</a>
+    </div>
+
+    <div class="card admin-form">
+        {% if is_self %}
+        <div class="perm-note">您正在编辑自己的账号：不可停用自己，也不可移除自己的管理角色。</div>
+        {% endif %}
+        {% if form.non_field_errors %}
+        <div class="form-error" style="margin-bottom:10px;">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">用户名</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="form-error">{{ form.username.errors }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_email">邮箱</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_role">角色</label>
+                {{ form.role }}
+            </div>
+            {% if form.is_active %}
+            <div class="form-group">
+                <label>{{ form.is_active }} 启用该账号</label>
+            </div>
+            {% endif %}
+            {% if form.password %}
+            <div class="form-group">
+                <label for="id_password">密码</label>
+                {{ form.password }}
+            </div>
+            <div class="form-group">
+                <label for="id_confirm_password">确认密码</label>
+                {{ form.confirm_password }}
+                {% if form.confirm_password.errors %}<div class="form-error">{{ form.confirm_password.errors }}</div>{% endif %}
+            </div>
+            {% endif %}
+            {% if form.new_password %}
+            <div class="form-group">
+                <label for="id_new_password">新密码（留空则不修改）</label>
+                {{ form.new_password }}
+            </div>
+            {% endif %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="{% url 'admin_cms:user_list' %}" class="btn btn-outline">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

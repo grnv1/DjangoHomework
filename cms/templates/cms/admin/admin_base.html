@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}管理后台{% endblock %} - CMS 管理后台</title>
+    <link rel="stylesheet" href="{% static 'cms/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'cms/css/admin.css' %}">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">
+                    {{ user.username }}{% if user.is_superuser %}（超级管理员）{% else %}（内容编辑）{% endif %}
+                </span>
+                <a href="{% url 'cms:item_list' %}">返回前台</a>
+                <form method="post" action="{% url 'cms:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;color:#b0bec5;cursor:pointer;font-size:14px;">退出登录</button>
+                </form>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            {% with p=request.path %}
+            <a href="{% url 'admin_cms:dashboard' %}" class="{% if p == '/admin/' %}active{% endif %}">后台首页</a>
+            <a href="{% url 'admin_cms:item_list' %}" class="{% if '/admin/item/' in p %}active{% endif %}">文章管理</a>
+            <a href="{% url 'admin_cms:category_list' %}" class="{% if '/admin/category/' in p %}active{% endif %}">栏目管理</a>
+            {% if user.is_superuser %}
+            <a href="{% url 'admin_cms:user_list' %}" class="{% if '/admin/user/' in p %}active{% endif %}">用户管理</a>
+            <a href="{% url 'admin_cms:log_list' %}" class="{% if '/admin/log' in p %}active{% endif %}">操作日志</a>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container" style="padding-top:16px;">
+        {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="admin-main">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

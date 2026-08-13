@@ -1,0 +1,45 @@
+{% load static %}
+<section class="card search-card">
+    <h2>{% if include_category %}文章查询{% else %}在本栏目内查询{% endif %}</h2>
+    <form class="search-form" method="get" action="{{ action_url }}">
+        <div class="field">
+            <label for="search_title">按标题</label>
+            <input type="text" id="search_title" name="title" placeholder="输入文章标题关键词" value="{{ form_values.title }}">
+        </div>
+        <div class="field">
+            <label>按发表时间</label>
+            <div style="display:flex; gap:6px;">
+                <input type="date" name="date_from" value="{{ form_values.date_from }}">
+                <span style="line-height:36px;color:var(--text-light);">至</span>
+                <input type="date" name="date_to" value="{{ form_values.date_to }}">
+            </div>
+        </div>
+        {% if include_category %}
+        <div class="field">
+            <label for="search_category">按栏目</label>
+            <select id="search_category" name="category">
+                <option value="">全部栏目</option>
+                {% for c in categories %}
+                <option value="{{ c.id }}" {% if form_values.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        <div class="field">
+            <label for="search_tag">按标签</label>
+            <select id="search_tag" name="tag">
+                <option value="">全部标签</option>
+                {% for t in tags %}
+                <option value="{{ t.id }}" {% if form_values.tag == t.id|stringformat:"s" %}selected{% endif %}>{{ t.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="search-actions">
+            <button type="submit" class="btn btn-primary">查询</button>
+            <a href="{{ action_url }}" class="btn btn-outline">重置</a>
+        </div>
+    </form>
+</section>
+{% if error %}
+<div class="alert">{{ error }}</div>
+{% endif %}

@@ -1,0 +1,36 @@
+{% extends "cms/base.html" %}
+
+{% block title %}{{ category.name }} - CMS 内容管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="card">
+        <h2>栏目：{{ category.name }}</h2>
+        {% if category.description %}
+        <p style="color:var(--text-light);font-size:14px;margin-top:6px;">{{ category.description }}</p>
+        {% endif %}
+    </section>
+
+    {% include "cms/front/_search_form.html" %}
+
+    <div class="alert">本栏目共找到 {{ page_obj.paginator.count }} 条结果。</div>
+
+    {% for item in page_obj %}
+    <article class="item-card">
+        <h3><a href="{% url 'cms:item_detail' item.id %}">{{ item.title }}</a></h3>
+        <div class="item-meta">
+            {% for tag in item.tags.all %}
+            <span class="badge badge-tag">{{ tag.name }}</span>
+            {% endfor %}
+            <span>作者：{{ item.author.username }}</span>
+            <span>发表时间：{{ item.publish_time|date:"Y-m-d H:i" }}</span>
+            <span>浏览 {{ item.views }} 次</span>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty">本栏目下暂无文章。</div>
+    {% endfor %}
+
+    {% include "cms/_pagination.html" %}
+</div>
+{% endblock %}

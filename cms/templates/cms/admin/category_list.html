@@ -1,0 +1,41 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}栏目管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>栏目管理</h1>
+        <a href="{% url 'admin_cms:category_create' %}" class="btn btn-primary">＋ 新建栏目</a>
+    </div>
+
+    <table class="admin-table">
+        <tr>
+            <th style="width:60px;">ID</th>
+            <th>栏目名称</th>
+            <th>简介</th>
+            <th style="width:80px;">文章数</th>
+            <th style="width:140px;">操作</th>
+        </tr>
+        {% for c in categories %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.description|default:"—" }}</td>
+            <td>{{ c.items.count }}</td>
+            <td class="table-actions">
+                <a class="link-edit" href="{% url 'admin_cms:category_edit' c.id %}">编辑</a>
+                {% if c.can_delete %}
+                <a class="link-delete" href="{% url 'admin_cms:category_delete' c.id %}">删除</a>
+                {% else %}
+                <span style="color:var(--text-light);">不可删</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="empty">暂无栏目，请先新建栏目。</td></tr>
+        {% endfor %}
+    </table>
+    <p style="font-size:13px;color:var(--text-light);margin-top:12px;">* 栏目下存在文章时不可删除，仅空栏目可删除（删除为软删除）。</p>
+</div>
+{% endblock %}

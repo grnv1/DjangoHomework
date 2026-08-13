@@ -1,0 +1,41 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}后台首页{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>后台首页</h1>
+    </div>
+    <div class="stat-grid">
+        <div class="card stat-card"><div class="num">{{ total_items }}</div><div class="label">文章总数</div></div>
+        <div class="card stat-card"><div class="num">{{ published_items }}</div><div class="label">已发布</div></div>
+        <div class="card stat-card"><div class="num">{{ draft_items }}</div><div class="label">草稿</div></div>
+        <div class="card stat-card"><div class="num">{{ total_categories }}</div><div class="label">栏目数</div></div>
+    </div>
+
+    <div class="card">
+        <h2 style="font-size:16px;margin-bottom:12px;">管理功能</h2>
+        <table class="admin-table">
+            <tr>
+                <td><a href="{% url 'admin_cms:item_list' %}" style="color:var(--primary);text-decoration:none;">文章管理</a></td>
+                <td style="color:var(--text-light);">发布 / 编辑 / 删除文章（内容编辑仅可操作自己创建的文章）</td>
+            </tr>
+            <tr>
+                <td><a href="{% url 'admin_cms:category_list' %}" style="color:var(--primary);text-decoration:none;">栏目管理</a></td>
+                <td style="color:var(--text-light);">栏目的增删改查（仅空栏目可删除）</td>
+            </tr>
+            {% if user.is_superuser %}
+            <tr>
+                <td><a href="{% url 'admin_cms:user_list' %}" style="color:var(--primary);text-decoration:none;">用户管理</a></td>
+                <td style="color:var(--text-light);">创建内容编辑 / 普通用户、启停账号（仅超级管理员可用）</td>
+            </tr>
+            <tr>
+                <td><a href="{% url 'admin_cms:log_list' %}" style="color:var(--primary);text-decoration:none;">操作日志</a></td>
+                <td style="color:var(--text-light);">查看栏目 / 文章的创建、更新、删除记录（仅超级管理员可用）</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+{% endblock %}

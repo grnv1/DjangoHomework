@@ -1,0 +1,62 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>{{ title }}</h1>
+        <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">返回列表</a>
+    </div>
+
+    <div class="card admin-form">
+        {% if form.non_field_errors %}
+        <div class="form-error" style="margin-bottom:10px;">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_title">文章标题</label>
+                {{ form.title }}
+                {% if form.title.errors %}<div class="form-error">{{ form.title.errors }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_category">所属栏目</label>
+                {{ form.category }}
+            </div>
+            <div class="form-group">
+                <label for="id_tags">标签（可多选）</label>
+                {{ form.tags }}
+                <p class="form-help">按住 Ctrl 可多选。</p>
+            </div>
+            <div class="form-group">
+                <label for="id_publish_time">发表时间</label>
+                {{ form.publish_time }}
+                <p class="form-help">可手动设置（支持定时发布）；草稿时留空，发布时留空将自动取当前时间。</p>
+            </div>
+            <div class="form-group">
+                <label for="id_status">状态</label>
+                {{ form.status }}
+            </div>
+            <div class="form-group">
+                <label for="id_content">正文内容</label>
+                {{ form.content }}
+                {% if form.content.errors %}<div class="form-error">{{ form.content.errors }}</div>{% endif %}
+            </div>
+            {% if form.author %}
+            <div class="form-group">
+                <label for="id_author">作者</label>
+                {{ form.author }}
+                {% if is_editor %}
+                <p class="form-help">内容编辑的作者固定为当前登录人，不可修改。</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">取消</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}文章管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>文章管理</h1>
+        <a href="{% url 'admin_cms:item_create' %}" class="btn btn-primary">＋ 新建文章</a>
+    </div>
+
+    {% if is_editor %}
+    <div class="perm-note">您为内容编辑，仅可查看和操作自己创建的文章。</div>
+    {% endif %}
+
+    <section class="card search-card" style="margin-bottom:16px;">
+        <form class="search-form" method="get" action="{% url 'admin_cms:item_list' %}">
+            <div class="field">
+                <label>标题关键词</label>
+                <input type="text" name="title" value="{{ form_values.title }}">
+            </div>
+            <div class="field">
+                <label>栏目</label>
+                <select name="category">
+                    <option value="">全部栏目</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if form_values.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field">
+                <label>状态</label>
+                <select name="status">
+                    <option value="">全部</option>
+                    <option value="1" {% if form_values.status == "1" %}selected{% endif %}>已发布</option>
+                    <option value="0" {% if form_values.status == "0" %}selected{% endif %}>草稿</option>
+                </select>
+            </div>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-primary">筛选</button>
+                <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">重置</a>
+            </div>
+        </form>
+    </section>
+
+    <table class="admin-table">
+        <tr>
+            <th style="width:60px;">ID</th>
+            <th>标题</th>
+            <th>栏目</th>
+            <th>作者</th>
+            <th>发表时间</th>
+            <th style="width:80px;">状态</th>
+            <th style="width:130px;">操作</th>
+        </tr>
+        {% for item in page_obj %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.title }}</td>
+            <td>{{ item.category.name }}</td>
+            <td>{{ item.author.username }}</td>
+            <td>{{ item.publish_time|date:"Y-m-d H:i"|default:"—" }}</td>
+            <td>
+                {% if item.status == 1 %}
+                <span class="status-badge status-published">已发布</span>
+                {% else %}
+                <span class="status-badge status-draft">草稿</span>
+                {% endif %}
+            </td>
+            <td class="table-actions">
+                <a class="link-edit" href="{% url 'admin_cms:item_edit' item.id %}">编辑</a>
+                <a class="link-delete" href="{% url 'admin_cms:item_delete' item.id %}">删除</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="empty">暂无文章。</td></tr>
+        {% endfor %}
+    </table>
+
+    {% include "cms/_pagination.html" %}
+</div>
+{% endblock %}

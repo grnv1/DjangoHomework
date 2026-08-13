@@ -1,0 +1,45 @@
+{% extends "cms/base.html" %}
+
+{% block title %}{{ item.title }} - CMS 内容管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="card">
+        <h1 class="detail-title">{{ item.title }}</h1>
+        <div class="detail-meta">
+            <span class="badge">{{ item.category.name }}</span>
+            <span>作者：{{ item.author.username }}</span>
+            <span>发表时间：{{ item.publish_time|date:"Y-m-d H:i" }}</span>
+            <span>浏览 {{ item.views }} 次</span>
+            {% if item.tags.all %}
+            <span>标签：
+                {% for tag in item.tags.all %}
+                <span class="badge badge-tag">{{ tag.name }}</span>
+                {% endfor %}
+            </span>
+            {% endif %}
+            <span>最后更新：{{ item.updated_at|date:"Y-m-d H:i" }}</span>
+        </div>
+
+        <div class="detail-content">
+            {{ item.content|linebreaks }}
+        </div>
+
+        <div class="favorite-row">
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'cms:favorite_toggle' item.id %}" style="display:inline;">
+                {% csrf_token %}
+                {% if is_favorited %}
+                <button type="submit" class="btn btn-danger-outline">★ 取消收藏</button>
+                {% else %}
+                <button type="submit" class="btn btn-primary">☆ 收藏</button>
+                {% endif %}
+            </form>
+            {% else %}
+            <a href="{% url 'cms:login' %}?next={% url 'cms:item_detail' item.id %}" class="btn btn-primary">☆ 收藏（请先登录）</a>
+            {% endif %}
+            <a href="{% url 'cms:item_list' %}" class="btn btn-outline">返回首页</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

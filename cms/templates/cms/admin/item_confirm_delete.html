@@ -1,0 +1,17 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}删除文章{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h1 style="font-size:20px;margin-bottom:12px;">确认删除文章「{{ obj.title }}」？</h1>
+        <p style="color:var(--text-light);font-size:14px;margin-bottom:20px;">删除为软删除，删除后前台将不再展示该文章。</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger-outline">确认删除</button>
+            <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">取消</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

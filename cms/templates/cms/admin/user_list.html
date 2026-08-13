@@ -1,0 +1,45 @@
+{% extends "cms/admin/admin_base.html" %}
+
+{% block title %}用户管理{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-toolbar">
+        <h1>用户管理</h1>
+        <a href="{% url 'admin_cms:user_create' %}" class="btn btn-primary">＋ 新建用户</a>
+    </div>
+
+    <div class="perm-note">本页面仅超级管理员可见。可创建普通用户与内容编辑账号。</div>
+
+    <table class="admin-table">
+        <tr>
+            <th style="width:60px;">ID</th>
+            <th>用户名</th>
+            <th>邮箱</th>
+            <th>角色</th>
+            <th>启用</th>
+            <th style="width:100px;">操作</th>
+        </tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}{% if u.id == request.user.id %}（我）{% endif %}</td>
+            <td>{{ u.email|default:"—" }}</td>
+            <td>
+                {% if u.is_superuser %}
+                <span class="status-badge status-published">超级管理员</span>
+                {% elif u.is_staff %}
+                <span class="status-badge status-published">内容编辑</span>
+                {% else %}
+                <span class="status-badge status-draft">普通用户</span>
+                {% endif %}
+            </td>
+            <td>{{ u.is_active|yesno:"是,否" }}</td>
+            <td class="table-actions">
+                <a class="link-edit" href="{% url 'admin_cms:user_edit' u.id %}">编辑</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

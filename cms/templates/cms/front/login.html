@@ -1,0 +1,30 @@
+{% extends "cms/base.html" %}
+
+{% block title %}登录 - CMS 内容管理系统{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-wrap">
+        <div class="card">
+            <h1>用户登录</h1>
+            {% if form.non_field_errors %}
+            <div class="form-error" style="margin-bottom:10px;">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <form method="post" action="{% url 'cms:login' %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <div class="form-group">
+                    <label for="id_username">用户名</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="id_password">密码</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">登录</button>
+            </form>
+            <p class="auth-footer">还没有账号？<a href="{% url 'cms:register' %}">立即注册</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
