@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建栏目 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html" class="active">栏目管理</a>
+            <a href="admin_user_list.html">用户管理</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>新建栏目</h1>
+                <a href="admin_category_list.html" class="btn btn-outline">返回列表</a>
+            </div>
+
+            <div class="card admin-form">
+                <div class="form-error" style="margin-bottom:10px;">栏目名称已存在，请更换。</div>
+                <form method="post" action="admin_category_list.html">
+                    <div class="form-group">
+                        <label for="name">栏目名称</label>
+                        <input type="text" id="name" name="name" placeholder="请输入栏目名称" value="合作交流">
+                        <p class="form-help">唯一，必填。</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">栏目简介（选填）</label>
+                        <textarea id="description" name="description" style="min-height:100px;" placeholder="简要介绍该栏目的内容方向"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <a href="admin_category_list.html" class="btn btn-outline">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章管理 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：wang（内容编辑）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html" class="active">文章管理</a>
+            <a href="admin_category_list.html">栏目管理</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>文章管理</h1>
+                <a href="admin_item_form.html" class="btn btn-primary">＋ 新建文章</a>
+            </div>
+
+            <!-- 内容编辑权限提示（超级管理员不显示此行） -->
+            <div class="perm-note">您为内容编辑，仅可查看和操作自己创建的文章。</div>
+
+            <!-- 列表筛选 -->
+            <section class="card search-card" style="margin-bottom:16px;">
+                <form class="search-form" method="get" action="admin_item_list.html">
+                    <div class="field">
+                        <label for="title">标题关键词</label>
+                        <input type="text" id="title" name="title" placeholder="输入标题">
+                    </div>
+                    <div class="field">
+                        <label for="category">栏目</label>
+                        <select id="category" name="category">
+                            <option value="">全部栏目</option>
+                            <option value="1">教学动态</option>
+                            <option value="2" selected>科研成果</option>
+                            <option value="3">校园通知</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="status">状态</label>
+                        <select id="status" name="status">
+                            <option value="">全部</option>
+                            <option value="1">已发布</option>
+                            <option value="0">草稿</option>
+                        </select>
+                    </div>
+                    <div class="search-actions">
+                        <button type="submit" class="btn btn-primary">筛选</button>
+                        <a href="admin_item_list.html" class="btn btn-outline">重置</a>
+                    </div>
+                </form>
+            </section>
+
+            <table class="admin-table">
+                <tr>
+                    <th style="width:60px;">ID</th>
+                    <th>标题</th>
+                    <th>栏目</th>
+                    <th>作者</th>
+                    <th>发表时间</th>
+                    <th style="width:80px;">状态</th>
+                    <th style="width:120px;">操作</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>交大轨道交通新型轴承技术取得阶段性突破</td>
+                    <td>科研成果</td>
+                    <td>wang</td>
+                    <td>2026-08-05 10:30</td>
+                    <td><span class="status-badge status-published">已发布</span></td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_item_form.html">编辑</a>
+                        <a class="link-delete" href="admin_item_delete.html">删除</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>智能交通系统在城市道路中的应用研究</td>
+                    <td>科研成果</td>
+                    <td>wang</td>
+                    <td>2026-07-28 15:00</td>
+                    <td><span class="status-badge status-published">已发布</span></td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_item_form.html">编辑</a>
+                        <a class="link-delete" href="admin_item_delete.html">删除</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>高速铁路枢纽站客流组织优化研究（草稿待完善）</td>
+                    <td>科研成果</td>
+                    <td>wang</td>
+                    <td>—</td>
+                    <td><span class="status-badge status-draft">草稿</span></td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_item_form.html">编辑</a>
+                        <a class="link-delete" href="admin_item_delete.html">删除</a>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 内容编辑只能看到自己的文章；超管可见全部。仅示意 -->
+            <p style="font-size:13px;color:var(--text-light);margin-top:12px;">
+                * 内容编辑列表仅显示本人创建的文章；超级管理员可查看全部文章。
+            </p>
+
+            <nav class="pagination">
+                <span class="current">1</span>
+                <a href="#">2</a>
+            </nav>
+        </div>
+    </main>
+</body>
+</html>

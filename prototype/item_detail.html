@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - CMS 内容管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <span class="site-name">CMS 内容管理系统</span>
+            <nav class="nav">
+                <a href="index.html">首页</a>
+                <a href="category.html">栏目</a>
+                <a href="favorites.html">我的收藏</a>
+                <a href="login.html" class="btn btn-primary">登录</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="card">
+                <h1 class="detail-title">交大轨道交通新型轴承技术取得阶段性突破</h1>
+                <div class="detail-meta">
+                    <span class="badge">科研成果</span>
+                    <span>作者：王老师</span>
+                    <span>发表时间：2026-08-05 10:30</span>
+                    <span>浏览 129 次</span>
+                    <span>标签：
+                        <span class="badge badge-tag">科研</span>
+                        <span class="badge badge-tag">轴承</span>
+                    </span>
+                </div>
+
+                <div class="detail-content">
+                    <p>近日，我校机械工程学院轨道交通装备研发团队在新型轴承技术研究方面取得阶段性突破，相关成果已进入试验验证阶段。</p>
+                    <p>该技术针对高速列车轴承在高转速、高负载工况下的可靠性问题，提出了新型材料与结构设计相结合的解决方案，有望进一步提升列车运行的稳定性与安全性。</p>
+                    <p>项目团队负责人表示，后续将结合产学研合作平台，加快成果转化应用，为轨道交通装备自主化发展贡献力量。</p>
+                </div>
+
+                <div class="favorite-row">
+                    <!--
+                        收藏按钮三种状态（模板根据登录态与收藏关系渲染其一）：
+                        1) 未登录：点击跳转 /login/?next=/item/<id>/
+                        2) 已登录未收藏：显示"☆ 收藏"（收藏）
+                        3) 已登录已收藏：显示"★ 取消收藏"（取消收藏，当前页所示）
+                    -->
+                    <form method="post" action="/favorite/toggle/1/" style="display:inline;">
+                        <button type="submit" class="btn btn-danger-outline">★ 取消收藏</button>
+                    </form>
+                    <a href="index.html" class="btn btn-outline">返回首页</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">CMS 内容管理系统 · 课程作业原型</div>
+    </footer>
+</body>
+</html>

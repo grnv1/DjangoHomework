@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的收藏 - CMS 内容管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <span class="site-name">CMS 内容管理系统</span>
+            <nav class="nav">
+                <a href="index.html">首页</a>
+                <a href="category.html">栏目</a>
+                <a href="favorites.html">我的收藏</a>
+                <a href="login.html" class="btn btn-primary">登录</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="card">
+                <h2>我的收藏（2 篇）</h2>
+            </section>
+
+            <article class="item-card">
+                <h3><a href="item_detail.html">交大轨道交通新型轴承技术取得阶段性突破</a></h3>
+                <div class="item-meta">
+                    <span class="badge">科研成果</span>
+                    <span>作者：王老师</span>
+                    <span>发表时间：2026-08-05 10:30</span>
+                    <span>收藏时间：2026-08-06</span>
+                </div>
+                <div style="margin-top:10px;">
+                    <form method="post" action="/favorite/toggle/1/" style="display:inline;">
+                        <button type="submit" class="btn btn-danger-outline">取消收藏</button>
+                    </form>
+                    <a href="item_detail.html" class="btn btn-outline">查看</a>
+                </div>
+            </article>
+
+            <article class="item-card">
+                <h3><a href="item_detail.html">智能交通系统在城市道路中的应用研究</a></h3>
+                <div class="item-meta">
+                    <span class="badge">科研成果</span>
+                    <span>作者：李老师</span>
+                    <span>发表时间：2026-07-28 15:00</span>
+                    <span>收藏时间：2026-07-29</span>
+                </div>
+                <div style="margin-top:10px;">
+                    <form method="post" action="/favorite/toggle/2/" style="display:inline;">
+                        <button type="submit" class="btn btn-danger-outline">取消收藏</button>
+                    </form>
+                    <a href="item_detail.html" class="btn btn-outline">查看</a>
+                </div>
+            </article>
+        </div>
+
+        <!-- 分页 -->
+        <div class="container">
+            <nav class="pagination">
+                <span class="current">1</span>
+                <a href="#">2</a>
+                <a href="#">下一页 »</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">CMS 内容管理系统 · 课程作业原型</div>
+    </footer>
+</body>
+</html>

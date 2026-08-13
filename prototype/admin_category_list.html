@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栏目管理 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html" class="active">栏目管理</a>
+            <a href="admin_user_list.html">用户管理</a>
+            <a href="admin_log.html">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>栏目管理</h1>
+                <a href="admin_category_form.html" class="btn btn-primary">＋ 新建栏目</a>
+            </div>
+
+            <table class="admin-table">
+                <tr>
+                    <th style="width:60px;">ID</th>
+                    <th>栏目名称</th>
+                    <th>简介</th>
+                    <th style="width:80px;">文章数</th>
+                    <th style="width:140px;">操作</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>教学动态</td>
+                    <td>教学安排与课堂改革信息</td>
+                    <td>5</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_category_form.html">编辑</a>
+                        <span class="link-delete disabled" title="栏目下存在未删除文章，不可删除">删除</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>科研成果</td>
+                    <td>各学科科研团队最新成果</td>
+                    <td>4</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_category_form.html">编辑</a>
+                        <span class="link-delete disabled" title="栏目下存在未删除文章，不可删除">删除</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>校园通知</td>
+                    <td>学校公告与通知事项</td>
+                    <td>2</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_category_form.html">编辑</a>
+                        <span class="link-delete disabled" title="栏目下存在未删除文章，不可删除">删除</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>招生就业</td>
+                    <td>招生政策与就业信息</td>
+                    <td>0</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_category_form.html">编辑</a>
+                        <a class="link-delete" href="admin_category_delete.html">删除</a>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 删除限制说明 -->
+            <p style="font-size:13px;color:var(--text-light);margin-top:12px;">
+                * 栏目下存在文章（文章数 &gt; 0）时删除按钮不可用，仅空栏目可删除。
+            </p>
+        </div>
+    </main>
+</body>
+</html>

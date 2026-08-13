@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html">栏目管理</a>
+            <a href="admin_user_list.html" class="active">用户管理</a>
+            <a href="admin_log.html">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>用户管理</h1>
+                <a href="admin_user_form.html" class="btn btn-primary">＋ 新建用户</a>
+            </div>
+
+            <div class="perm-note">本页面仅超级管理员可见。可创建内容编辑（is_staff）与普通前台用户；不可停用、删除或修改当前登录本人的角色。</div>
+
+            <table class="admin-table">
+                <tr>
+                    <th style="width:60px;">ID</th>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>角色</th>
+                    <th>启用</th>
+                    <th style="width:160px;">操作</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>admin</td>
+                    <td>admin@bjtu.edu.cn</td>
+                    <td><span class="status-badge status-published">超级管理员</span></td>
+                    <td>是</td>
+                    <td class="table-actions">
+                        <span class="link-edit disabled" title="当前登录本人，不可修改">编辑</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>wang</td>
+                    <td>wang@bjtu.edu.cn</td>
+                    <td><span class="status-badge status-published">内容编辑</span></td>
+                    <td>是</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_user_form.html">编辑</a>
+                        <a class="link-delete" href="admin_user_list.html">停用</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>li</td>
+                    <td>li@bjtu.edu.cn</td>
+                    <td><span class="status-badge status-published">内容编辑</span></td>
+                    <td>是</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_user_form.html">编辑</a>
+                        <a class="link-delete" href="admin_user_list.html">停用</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>zhangsan</td>
+                    <td>zhangsan@example.com</td>
+                    <td><span class="status-badge status-draft">普通用户</span></td>
+                    <td>是</td>
+                    <td class="table-actions">
+                        <a class="link-edit" href="admin_user_form.html">编辑</a>
+                        <a class="link-delete" href="admin_user_list.html">停用</a>
+                    </td>
+                </tr>
+            </table>
+
+            <p style="font-size:13px;color:var(--text-light);margin-top:12px;">
+                * 停用后用户无法登录；已停用用户的"停用"按钮显示为"启用"。用户不提供物理删除。
+            </p>
+        </div>
+    </main>
+</body>
+</html>

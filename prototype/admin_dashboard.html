@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - CMS 内容管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html" class="active">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html">栏目管理</a>
+            <a href="admin_user_list.html">用户管理</a>
+            <a href="admin_log.html">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>后台首页</h1>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stat-grid">
+                <div class="card stat-card">
+                    <div class="num">12</div>
+                    <div class="label">文章总数</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="num">10</div>
+                    <div class="label">已发布</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="num">2</div>
+                    <div class="label">草稿</div>
+                </div>
+                <div class="card stat-card">
+                    <div class="num">4</div>
+                    <div class="label">栏目数</div>
+                </div>
+            </div>
+
+            <!-- 功能导航说明 -->
+            <div class="card">
+                <h2 style="font-size:16px;margin-bottom:12px;">管理功能</h2>
+                <table class="admin-table">
+                    <tr>
+                        <td><a href="admin_item_list.html" style="color:var(--primary);text-decoration:none;">文章管理</a></td>
+                        <td style="color:var(--text-light);">发布 / 编辑 / 删除文章（内容编辑仅可操作自己创建的文章）</td>
+                    </tr>
+                    <tr>
+                        <td><a href="admin_category_list.html" style="color:var(--primary);text-decoration:none;">栏目管理</a></td>
+                        <td style="color:var(--text-light);">栏目的增删改查（仅空栏目可删除）</td>
+                    </tr>
+                    <tr>
+                        <td><a href="admin_user_list.html" style="color:var(--primary);text-decoration:none;">用户管理</a></td>
+                        <td style="color:var(--text-light);">创建内容编辑 / 普通用户、调整权限（仅超级管理员可用）</td>
+                    </tr>
+                    <tr>
+                        <td><a href="admin_log.html" style="color:var(--primary);text-decoration:none;">操作日志</a></td>
+                        <td style="color:var(--text-light);">查看栏目 / 文章的创建、更新、删除记录（仅超级管理员可用）</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

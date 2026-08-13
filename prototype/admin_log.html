@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作日志 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html">栏目管理</a>
+            <a href="admin_user_list.html">用户管理</a>
+            <a href="admin_log.html" class="active">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>操作日志</h1>
+            </div>
+
+            <!-- 权限说明 -->
+            <div class="perm-note">本页面仅超级管理员可见，记录栏目 / 文章的创建、更新、删除操作。</div>
+
+            <!-- 列表筛选（可按操作人 / 对象类型 / 操作类型筛选） -->
+            <section class="card search-card" style="margin-bottom:16px;">
+                <form class="search-form" method="get" action="admin_log.html">
+                    <div class="field">
+                        <label for="operator">操作人</label>
+                        <select id="operator" name="operator">
+                            <option value="">全部</option>
+                            <option value="1">admin</option>
+                            <option value="2" selected>wang</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="target_type">对象类型</label>
+                        <select id="target_type" name="target_type">
+                            <option value="">全部</option>
+                            <option value="category">栏目</option>
+                            <option value="item">文章</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="action">操作类型</label>
+                        <select id="action" name="action">
+                            <option value="">全部</option>
+                            <option value="create">创建</option>
+                            <option value="update">更新</option>
+                            <option value="delete">删除</option>
+                        </select>
+                    </div>
+                    <div class="search-actions">
+                        <button type="submit" class="btn btn-primary">筛选</button>
+                        <a href="admin_log.html" class="btn btn-outline">重置</a>
+                    </div>
+                </form>
+            </section>
+
+            <table class="admin-table">
+                <tr>
+                    <th style="width:180px;">操作时间</th>
+                    <th style="width:120px;">操作人</th>
+                    <th style="width:120px;">操作类型</th>
+                    <th style="width:100px;">对象类型</th>
+                    <th style="width:80px;">对象 ID</th>
+                    <th>操作说明</th>
+                </tr>
+                <tr>
+                    <td>2026-08-08 11:20</td>
+                    <td>wang</td>
+                    <td><span class="log-action log-create">创建</span></td>
+                    <td>文章</td>
+                    <td>3</td>
+                    <td>创建文章《高速铁路枢纽站客流组织优化研究》</td>
+                </tr>
+                <tr>
+                    <td>2026-08-06 16:45</td>
+                    <td>admin</td>
+                    <td><span class="log-action log-update">更新</span></td>
+                    <td>栏目</td>
+                    <td>2</td>
+                    <td>更新栏目《科研成果》</td>
+                </tr>
+                <tr>
+                    <td>2026-08-05 10:31</td>
+                    <td>wang</td>
+                    <td><span class="log-action log-update">更新</span></td>
+                    <td>文章</td>
+                    <td>1</td>
+                    <td>更新文章《交大轨道交通新型轴承技术取得阶段性突破》</td>
+                </tr>
+                <tr>
+                    <td>2026-08-04 09:10</td>
+                    <td>admin</td>
+                    <td><span class="log-action log-delete">删除</span></td>
+                    <td>栏目</td>
+                    <td>5</td>
+                    <td>删除栏目《合作交流》（软删除）</td>
+                </tr>
+                <tr>
+                    <td>2026-08-02 14:00</td>
+                    <td>wang</td>
+                    <td><span class="log-action log-create">创建</span></td>
+                    <td>文章</td>
+                    <td>2</td>
+                    <td>创建文章《智能交通系统在城市道路中的应用研究》</td>
+                </tr>
+            </table>
+
+            <nav class="pagination">
+                <span class="current">1</span>
+                <a href="#">2</a>
+                <a href="#">下一页 »</a>
+            </nav>
+        </div>
+    </main>
+</body>
+</html>

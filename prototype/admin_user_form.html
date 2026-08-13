@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编辑用户 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html">栏目管理</a>
+            <a href="admin_user_list.html" class="active">用户管理</a>
+            <a href="admin_log.html">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="admin-toolbar">
+                <h1>编辑用户</h1>
+                <a href="admin_user_list.html" class="btn btn-outline">返回列表</a>
+            </div>
+
+            <div class="card admin-form">
+                <!-- 自保护提示：当前登录本人行 -->
+                <div class="form-error" style="margin-bottom:10px;">不可停用、删除或修改当前登录本人的角色与启用状态。</div>
+
+                <form method="post" action="admin_user_list.html">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" name="username" placeholder="请输入用户名" value="wang">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" name="email" placeholder="请输入邮箱" value="wang@bjtu.edu.cn">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">角色</label>
+                        <select id="role" name="role">
+                            <option value="super">超级管理员</option>
+                            <option value="editor" selected>内容编辑</option>
+                            <option value="user">普通用户</option>
+                        </select>
+                        <p class="form-help">内容编辑可管理栏目与本人创建的文章；普通用户仅可前台浏览。</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="is_active">账号启用</label>
+                        <select id="is_active" name="is_active">
+                            <option value="1" selected>启用</option>
+                            <option value="0">停用</option>
+                        </select>
+                        <p class="form-help">停用后该用户无法登录系统。</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">重置密码（选填）</label>
+                        <input type="password" id="password" name="password" placeholder="留空则不修改密码">
+                        <p class="form-help">如需重置密码请在此输入新密码。</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">保存</button>
+                        <a href="admin_user_list.html" class="btn btn-outline">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

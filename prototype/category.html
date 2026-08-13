@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栏目 - 科研成果 | CMS 内容管理系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <span class="site-name">CMS 内容管理系统</span>
+            <nav class="nav">
+                <a href="index.html">首页</a>
+                <a href="category.html">栏目</a>
+                <a href="favorites.html">我的收藏</a>
+                <a href="login.html" class="btn btn-primary">登录</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- 栏目介绍 -->
+            <section class="card">
+                <h2>栏目：科研成果</h2>
+                <p style="color:var(--text-light);font-size:14px;margin-top:6px;">介绍我校各学科科研团队的最新研究成果与进展。</p>
+            </section>
+
+            <!-- 栏目内查询区：栏目已固定，可叠加标题/时间/标签条件 -->
+            <section class="card search-card">
+                <h2>在本栏目内查询</h2>
+                <form class="search-form" method="get" action="category.html">
+                    <div class="field">
+                        <label for="title">按标题</label>
+                        <input type="text" id="title" name="title" placeholder="输入文章标题关键词" value="交通">
+                    </div>
+                    <div class="field">
+                        <label for="date_from">按发表时间</label>
+                        <div style="display:flex; gap:6px;">
+                            <input type="date" id="date_from" name="date_from" value="2026-07-01">
+                            <span style="line-height:36px;color:var(--text-light);">至</span>
+                            <input type="date" id="date_to" name="date_to" value="2026-08-08">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="tag">按标签</label>
+                        <select id="tag" name="tag">
+                            <option value="">全部标签</option>
+                            <option value="1">科研</option>
+                            <option value="2">就业</option>
+                            <option value="3">招生</option>
+                        </select>
+                    </div>
+                    <div class="search-actions">
+                        <button type="submit" class="btn btn-primary">查询</button>
+                        <a href="category.html" class="btn btn-outline">重置</a>
+                    </div>
+                </form>
+            </section>
+
+            <!-- 查询提示 -->
+            <div class="alert">在本栏目内共找到 2 条结果。</div>
+
+            <!-- 该栏目下文章列表 -->
+            <article class="item-card">
+                <h3><a href="item_detail.html">交大轨道交通新型轴承技术取得阶段性突破</a></h3>
+                <div class="item-meta">
+                    <span>作者：王老师</span>
+                    <span>发表时间：2026-08-05 10:30</span>
+                    <span>浏览 128 次</span>
+                </div>
+            </article>
+
+            <article class="item-card">
+                <h3><a href="item_detail.html">智能交通系统在城市道路中的应用研究</a></h3>
+                <div class="item-meta">
+                    <span>作者：李老师</span>
+                    <span>发表时间：2026-07-28 15:00</span>
+                    <span>浏览 86 次</span>
+                </div>
+            </article>
+
+            <article class="item-card">
+                <h3><a href="item_detail.html">高速铁路枢纽站客流组织优化研究</a></h3>
+                <div class="item-meta">
+                    <span>作者：张老师</span>
+                    <span>发表时间：2026-07-15 09:20</span>
+                    <span>浏览 210 次</span>
+                </div>
+            </article>
+
+            <nav class="pagination">
+                <span class="current">1</span>
+                <a href="#">2</a>
+                <a href="#">下一页 »</a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">CMS 内容管理系统 · 课程作业原型</div>
+    </footer>
+</body>
+</html>

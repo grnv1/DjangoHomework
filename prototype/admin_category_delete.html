@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>删除栏目 - CMS 管理后台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container">
+            <span class="admin-site-name">CMS 管理后台</span>
+            <nav class="nav">
+                <span style="font-size:13px;color:#90a4ae;">当前用户：admin（超级管理员）</span>
+                <a href="index.html">返回前台</a>
+                <a href="login.html">退出登录</a>
+            </nav>
+        </div>
+    </header>
+    <nav class="admin-nav">
+        <div class="container">
+            <a href="admin_dashboard.html">后台首页</a>
+            <a href="admin_item_list.html">文章管理</a>
+            <a href="admin_category_list.html" class="active">栏目管理</a>
+            <a href="admin_user_list.html">用户管理</a>
+            <a href="admin_log.html">操作日志</a>
+        </div>
+    </nav>
+
+    <main class="admin-main">
+        <div class="container">
+            <div class="card admin-form" style="max-width:560px;margin:0 auto;">
+                <h1 style="font-size:20px;margin-bottom:6px;">确认删除栏目？</h1>
+                <p style="font-size:14px;color:var(--text-light);margin-bottom:14px;">
+                    将删除栏目 <strong>招生就业</strong>（ID：4），删除后该栏目将不再对外展示。
+                </p>
+                <div class="alert" style="margin-bottom:14px;">删除采用软删除，数据不物理清除；已删除栏目下的文章不计入"空栏目"判断。</div>
+
+                <form method="post" action="admin_category_list.html">
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-danger-outline">确认删除</button>
+                        <a href="admin_category_list.html" class="btn btn-outline">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
