@@ -1,5 +1,6 @@
 """CMS 单元测试：模型约束、可见性规则、软删除、权限、查询与收藏。"""
 
+import re
 from datetime import timedelta
 
 from django.contrib.auth.models import User
@@ -147,9 +148,17 @@ class CmsViewTests(TestCase):
         self.client.login(username="wang", password="wang12345")
         self.assertEqual(self.client.get(f"/admin/item/{self.published.id}/edit/").status_code, 200)
 
+    def _item_form_token(self, url):
+        """从文章表单页提取一次性提交令牌。"""
+        resp = self.client.get(url)
+        m = re.search(r'name="submit_token" value="([^"]+)"', resp.content.decode())
+        self.assertIsNotNone(m, "表单页缺少 submit_token")
+        return m.group(1)
+
     def test_item_create_publish_action(self):
         """发布：作者自动取当前登录人，未填时间自动取当前时间。"""
         self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token("/admin/item/create/")
         resp = self.client.post("/admin/item/create/", {
             "title": "新文章",
             "content": "正文",
@@ -157,6 +166,7 @@ class CmsViewTests(TestCase):
             "action": "publish",
             "tags": [self.tag.id],
             "publish_time": "",
+            "submit_token": token,
         })
         self.assertEqual(resp.status_code, 302)
         item = Item.objects.get(title="新文章")
@@ -168,6 +178,7 @@ class CmsViewTests(TestCase):
     def test_item_create_draft_action_keeps_publish_time(self):
         """存草稿：状态为草稿但保留发表时间，且可输入新标签自动创建。"""
         self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token("/admin/item/create/")
         resp = self.client.post("/admin/item/create/", {
             "title": "新增草稿文章",
             "content": "正文",
@@ -175,6 +186,7 @@ class CmsViewTests(TestCase):
             "action": "draft",
             "publish_time": "2026-12-31T08:00",
             "new_tags": "交通、智慧城市",
+            "submit_token": token,
         })
         self.assertEqual(resp.status_code, 302)
         item = Item.objects.get(title="新增草稿文章")
@@ -182,6 +194,25 @@ class CmsViewTests(TestCase):
         self.assertIsNotNone(item.publish_time)
         self.assertEqual(item.author, self.editor)
         self.assertEqual(set(item.tags.values_list("name", flat=True)), {"交通", "智慧城市"})
+
+    def test_item_create_rejects_duplicate_submit(self):
+        """同一提交令牌重复使用：只创建一篇，并拦截重复提交。"""
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token("/admin/item/create/")
+        data = {
+            "title": "重复提交文章",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "submit_token": token,
+        }
+        first = self.client.post("/admin/item/create/", data)
+        self.assertEqual(first.status_code, 302)
+        self.assertEqual(Item.objects.filter(title="重复提交文章").count(), 1)
+        # 第二次携带同一令牌提交：被拦截，不产生新文章
+        second = self.client.post("/admin/item/create/", data)
+        self.assertEqual(second.status_code, 302)
+        self.assertEqual(Item.objects.filter(title="重复提交文章").count(), 1)
 
     def test_anonymous_favorite_redirects_to_login(self):
         resp = self.client.post(f"/favorite/toggle/{self.published.id}/")

@@ -1,5 +1,6 @@
 """公共工具：权限装饰器、查询过滤、分页等辅助函数。"""
 
+import secrets
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -35,6 +36,36 @@ def superuser_required(view_func):
         return view_func(request, *args, **kwargs)
 
     return wrapper
+
+
+def generate_form_token(request):
+    """为表单生成一次性提交令牌（防重复提交），存入 session。
+
+    渲染表单页时调用；仅在保存成功后由 consume_form_token 消费，
+    从而拦截双击 / 重复提交导致的重复写入。
+    """
+    token = secrets.token_hex(16)
+    pending = list(request.session.get("_pending_tokens", []))
+    pending.append(token)
+    # 仅保留最近 20 个令牌，防止 session 无限膨胀
+    del pending[:-20]
+    request.session["_pending_tokens"] = pending
+    return token
+
+
+def consume_form_token(request, token):
+    """校验并消费提交令牌。
+
+    令牌存在则移除并返回 True；缺失或已被使用（即重复提交）返回 False。
+    """
+    if not token:
+        return False
+    pending = list(request.session.get("_pending_tokens", []))
+    if token in pending:
+        pending.remove(token)
+        request.session["_pending_tokens"] = pending
+        return True
+    return False
 
 
 def get_visible_items():

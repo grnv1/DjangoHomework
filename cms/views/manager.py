@@ -14,6 +14,8 @@ from cms.utils import (
     query_string_without_page,
     staff_required,
     superuser_required,
+    consume_form_token,
+    generate_form_token,
 )
 
 
@@ -169,7 +171,11 @@ def item_create(request):
     form = ItemForm(request.POST or None, initial=initial)
     if not request.user.is_superuser:
         form.fields.pop("author")
-    if form.is_valid():
+    if request.method == "POST" and form.is_valid():
+        if not consume_form_token(request, request.POST.get("submit_token")):
+            # 令牌已使用：拦截重复提交，避免创建重复文章
+            messages.warning(request, "请勿重复提交，该文章可能已保存。")
+            return redirect("admin_cms:item_list")
         obj = form.save(commit=False)
         obj.created_by = request.user
         obj.updated_by = request.user
@@ -185,6 +191,7 @@ def item_create(request):
         "form": form,
         "title": "新建文章",
         "is_editor": not request.user.is_superuser,
+        "submit_token": generate_form_token(request),
     })
 
 
@@ -196,7 +203,11 @@ def item_edit(request, id):
     form = ItemForm(request.POST or None, instance=obj)
     if not request.user.is_superuser:
         form.fields.pop("author")
-    if form.is_valid():
+    if request.method == "POST" and form.is_valid():
+        if not consume_form_token(request, request.POST.get("submit_token")):
+            # 令牌已使用：拦截重复提交，避免重复保存与重复记日志
+            messages.warning(request, "请勿重复提交，该文章可能已保存。")
+            return redirect("admin_cms:item_list")
         obj = form.save(commit=False)
         obj.updated_by = request.user
         if not request.user.is_superuser:
@@ -212,6 +223,7 @@ def item_edit(request, id):
         "form": form,
         "title": "编辑文章",
         "is_editor": not request.user.is_superuser,
+        "submit_token": generate_form_token(request),
     })
 
 
