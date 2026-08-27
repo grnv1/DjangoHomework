@@ -20,7 +20,7 @@
                 <a href="{% url 'admin_cms:dashboard' %}" class="btn btn-outline">后台管理</a>
                 {% endif %}
                 {% if user.is_authenticated %}
-                <span style="font-size:14px;color:var(--text-light);">{{ user.username }}</span>
+                <span style="font-size:14px;color:rgba(255,255,255,0.9);">{{ user.username }}</span>
                 <form method="post" action="{% url 'cms:logout' %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-outline">退出</button>

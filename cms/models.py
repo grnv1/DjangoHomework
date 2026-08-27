@@ -105,11 +105,13 @@ class Item(BaseModel):
         DRAFT = 0, "草稿"
         PUBLISHED = 1, "已发布"
 
-    title = models.CharField(max_length=200, verbose_name="题目")
-    content = models.TextField(verbose_name="正文")
+    title = models.CharField(max_length=200, blank=True, verbose_name="题目")
+    content = models.TextField(blank=True, verbose_name="正文")
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name="items",
         verbose_name="所属栏目",
     )

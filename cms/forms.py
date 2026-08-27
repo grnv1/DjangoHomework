@@ -77,9 +77,18 @@ class ItemForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # 不渲染 HTML5 required 属性，避免浏览器在存草稿时拦截空字段；
+        # 必填校验统一交给服务端（发布时仍强制标题 / 正文 / 栏目 / 作者必填）。
+        self.use_required_attribute = False
         # 发表时间可空：草稿时为空，发布时为空则由视图自动取当前时间
         self.fields["publish_time"].required = False
         self.fields["author"].label = "作者"
+        # 存草稿时允许内容不完整：标题 / 正文 / 栏目 / 作者均可空；
+        # 发布时保持必填，保证发布出去的文章信息完整。
+        is_draft = (self.data or {}).get("action") == "draft"
+        for name in ("title", "content", "category", "author"):
+            if name in self.fields:
+                self.fields[name].required = not is_draft
 
     def get_new_tag_names(self):
         """解析"新增标签"输入：按逗号 / 顿号 / 空白分隔并去除空项。"""

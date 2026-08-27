@@ -1,26 +1,37 @@
-/* CMS 管理后台专用样式 */
+/* CMS 管理后台专用样式 - 深色渐变风格 */
 :root {
-    --admin-header: #263238;
-    --admin-nav: #37474f;
-    --admin-text: #eceff1;
+    --admin-gradient: linear-gradient(135deg, #1e293b 0%, #27364f 60%, #2f4470 100%);
 }
 
 .admin-header {
-    background: var(--admin-header);
-    color: var(--admin-text);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--admin-gradient);
+    color: #eceff1;
     padding: 12px 0;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.35);
 }
 .admin-header .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-.admin-site-name { font-size: 18px; font-weight: 700; }
-.admin-header .nav a { color: #b0bec5; text-decoration: none; font-size: 14px; margin-left: 18px; }
+.admin-site-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #a5c8ff;
+    background: linear-gradient(135deg, #8ab4ff, #c4b5fd);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.admin-header .nav a { color: #b8c4d6; text-decoration: none; font-size: 14px; margin-left: 18px; transition: color 0.15s ease; }
 .admin-header .nav a:hover { color: #fff; }
 
 .admin-nav {
-    background: var(--admin-nav);
+    background: #223049;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
     padding: 0;
 }
 .admin-nav .container { display: flex; }
@@ -29,20 +40,32 @@
     text-decoration: none;
     padding: 12px 22px;
     font-size: 14px;
+    transition: background 0.15s ease, color 0.15s ease;
 }
-.admin-nav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-.admin-nav a.active { background: var(--primary); color: #fff; }
+.admin-nav a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+.admin-nav a.active {
+    background: linear-gradient(135deg, #1a73e8, #6d5ef3);
+    color: #fff;
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.25);
+}
 
-.admin-main { padding: 24px 0 48px; }
+.admin-main { padding: 28px 0 48px; }
 
 /* 工具栏：页面标题 + 操作按钮 */
 .admin-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
-.admin-toolbar h1 { font-size: 20px; }
+.admin-toolbar h1 {
+    font-size: 20px;
+    color: var(--primary);
+    background: linear-gradient(135deg, #1a73e8, #6d5ef3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 /* 数据表格 */
 .admin-table {
@@ -50,32 +73,35 @@
     border-collapse: collapse;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 .admin-table th, .admin-table td {
-    padding: 11px 14px;
+    padding: 12px 14px;
     text-align: left;
     font-size: 14px;
     border-bottom: 1px solid var(--border);
 }
 .admin-table th {
-    background: #fafbfc;
-    color: var(--text-light);
+    background: linear-gradient(180deg, #f8fafc, #eef2f9);
+    color: #475569;
     font-weight: 600;
 }
 .admin-table tr:last-child td { border-bottom: none; }
-.admin-table tr:hover td { background: #fafbff; }
+.admin-table tr:hover td { background: #f4f8ff; }
 
 /* 状态徽章 */
-.status-badge { padding: 3px 10px; border-radius: 10px; font-size: 12px; }
-.status-published { background: #ecfdf5; color: #059669; }
-.status-draft { background: #f3f4f6; color: #6b7280; }
+.status-badge { padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.status-published { background: linear-gradient(135deg, #ecfdf5, #d1f5e4); color: #059669; }
+.status-draft { background: linear-gradient(135deg, #f3f4f6, #e5e7eb); color: #6b7280; }
 
 /* 表格内操作链接 */
-.table-actions a { font-size: 13px; margin-right: 12px; text-decoration: none; }
+.table-actions a { font-size: 13px; margin-right: 12px; text-decoration: none; font-weight: 500; }
 .link-edit { color: var(--primary); }
+.link-edit:hover { text-decoration: underline; }
 .link-delete { color: var(--danger); }
+.link-delete:hover { text-decoration: underline; }
 .table-actions .disabled {
     color: #b0b8c0;
     cursor: not-allowed;
@@ -84,29 +110,39 @@
 }
 
 /* 操作日志类型徽章 */
-.log-action { padding: 3px 10px; border-radius: 10px; font-size: 12px; }
-.log-create { background: #ecfdf5; color: #059669; }
-.log-update { background: #eef4ff; color: var(--primary); }
-.log-delete { background: #fdecea; color: var(--danger); }
+.log-action { padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+.log-create { background: linear-gradient(135deg, #ecfdf5, #d1f5e4); color: #059669; }
+.log-update { background: linear-gradient(135deg, #eef4ff, #dce8ff); color: var(--primary); }
+.log-delete { background: linear-gradient(135deg, #fdecea, #fad6d1); color: var(--danger); }
 
 /* 管理端表单 */
 .admin-form { max-width: 720px; }
-.admin-form .form-group label { font-size: 14px; margin-bottom: 4px; }
+.admin-form .form-group label { font-size: 14px; margin-bottom: 5px; font-weight: 500; }
 .admin-form input[type="text"], .admin-form input[type="datetime-local"],
 .admin-form input[type="password"], .admin-form input[type="email"],
 .admin-form select, .admin-form textarea {
     width: 100%;
-    padding: 9px 12px;
+    padding: 10px 12px;
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.admin-form input[type="text"]:focus, .admin-form input[type="datetime-local"]:focus,
+.admin-form input[type="password"]:focus, .admin-form input[type="email"]:focus,
+.admin-form select:focus, .admin-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.14);
 }
 .admin-form textarea { min-height: 220px; resize: vertical; }
 .admin-form input[type="checkbox"] {
     width: auto;
     margin-right: 6px;
     vertical-align: middle;
+    accent-color: var(--primary);
 }
 /* 标签勾选列表：自适应网格，标签多时分列排列 */
 .admin-form .form-group div[id^="id_tags"] {
@@ -121,24 +157,45 @@
     display: inline-flex;
     align-items: center;
 }
-.admin-form .form-group div[id^="id_tags"] label { margin-bottom: 0; }
-.admin-form .form-group { margin-bottom: 16px; }
+.admin-form .form-group div[id^="id_tags"] label { margin-bottom: 0; font-weight: 400; }
+.admin-form .form-group { margin-bottom: 18px; }
 .form-help { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-.form-actions { display: flex; gap: 10px; }
+.form-actions { display: flex; gap: 10px; margin-top: 6px; }
 
 /* 统计卡片 */
-.stat-grid { display: flex; gap: 16px; margin-bottom: 20px; }
-.stat-card { flex: 1; text-align: center; padding: 20px; }
-.stat-card .num { font-size: 30px; font-weight: 700; color: var(--primary); }
-.stat-card .label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+.stat-grid { display: flex; gap: 16px; margin-bottom: 24px; }
+.stat-card {
+    flex: 1;
+    text-align: center;
+    padding: 22px 16px;
+    border-radius: var(--radius);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.stat-card .num {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--primary);
+    background: linear-gradient(135deg, #1a73e8, #6d5ef3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.stat-card .label { font-size: 13px; color: var(--text-light); margin-top: 6px; }
+.stat-card:nth-child(1) { background: linear-gradient(135deg, #eef4ff, #e3ecff); }
+.stat-card:nth-child(2) { background: linear-gradient(135deg, #ecfdf5, #dcf8e9); }
+.stat-card:nth-child(3) { background: linear-gradient(135deg, #fff7ed, #ffedd5); }
+.stat-card:nth-child(4) { background: linear-gradient(135deg, #f3f4f6, #e9ecef); }
+.stat-card:nth-child(5) { background: linear-gradient(135deg, #f0edfe, #e6e0fc); }
 
 /* 权限提示条 */
 .perm-note {
-    background: #eef4ff;
+    background: linear-gradient(135deg, #eef4ff, #e3ecff);
     border: 1px solid #c7dbff;
+    border-left: 4px solid var(--primary);
     color: var(--primary-dark);
-    padding: 10px 14px;
-    border-radius: 4px;
+    padding: 11px 16px;
+    border-radius: 8px;
     font-size: 13px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
