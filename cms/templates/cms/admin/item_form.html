@@ -25,18 +25,18 @@
                 {{ form.category }}
             </div>
             <div class="form-group">
-                <label for="id_tags">标签（可多选）</label>
+                <label>标签（可多选）</label>
                 {{ form.tags }}
-                <p class="form-help">按住 Ctrl 可多选。</p>
+            </div>
+            <div class="form-group">
+                <label for="id_new_tags">新增标签（可选）</label>
+                {{ form.new_tags }}
+                <p class="form-help">可输入新标签名，多个用逗号或空格分隔，保存时自动创建并关联。</p>
             </div>
             <div class="form-group">
                 <label for="id_publish_time">发表时间</label>
                 {{ form.publish_time }}
-                <p class="form-help">可手动设置（支持定时发布）；草稿时留空，发布时留空将自动取当前时间。</p>
-            </div>
-            <div class="form-group">
-                <label for="id_status">状态</label>
-                {{ form.status }}
+                <p class="form-help">发布时留空将自动取当前时间；可填写未来时间定时发布。存草稿会保留此时间。</p>
             </div>
             <div class="form-group">
                 <label for="id_content">正文内容</label>
@@ -48,12 +48,13 @@
                 <label for="id_author">作者</label>
                 {{ form.author }}
                 {% if is_editor %}
-                <p class="form-help">内容编辑的作者固定为当前登录人，不可修改。</p>
+                <p class="form-help">内容管理员的作者固定为当前登录人，不可修改。</p>
                 {% endif %}
             </div>
             {% endif %}
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">保存</button>
+                <button type="submit" name="action" value="draft" class="btn btn-outline">存草稿</button>
+                <button type="submit" name="action" value="publish" class="btn btn-primary">发布</button>
                 <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">取消</a>
             </div>
         </form>

@@ -35,12 +35,13 @@ echo [1/3] Running migrate...
 "%PY%" manage.py migrate
 if errorlevel 1 goto :error
 
-if not exist db.sqlite3 (
+"%PY%" manage.py shell -c "from django.contrib.auth.models import User; raise SystemExit(0 if User.objects.exists() else 1)" >nul 2>&1
+if errorlevel 1 (
     echo [2/3] Seeding demo data...
     "%PY%" manage.py seed
     if errorlevel 1 goto :error
 ) else (
-    echo [2/3] Database already exists, skip seed
+    echo [2/3] Data already exists, skip seed
 )
 
 echo [3/3] Starting server: http://127.0.0.1:8000

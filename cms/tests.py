@@ -128,13 +128,13 @@ class CmsViewTests(TestCase):
         self.assertContains(resp, "起始日期不能晚于结束日期")
 
     def test_editor_cannot_access_superuser_pages(self):
-        """内容编辑访问超管页面返回 403。"""
+        """内容管理员访问超管页面返回 403。"""
         self.client.login(username="wang", password="wang12345")
         self.assertEqual(self.client.get("/admin/user/").status_code, 403)
         self.assertEqual(self.client.get("/admin/log/").status_code, 403)
 
     def test_editor_cannot_edit_others_item(self):
-        """内容编辑不能编辑他人文章。"""
+        """内容管理员不能编辑他人文章。"""
         other = User.objects.create_user("li", "li@test.com", "li12345")
         apply_role(other, "editor")
         other.save()
@@ -143,26 +143,45 @@ class CmsViewTests(TestCase):
         self.assertEqual(self.client.get(f"/admin/item/{item.id}/edit/").status_code, 403)
 
     def test_editor_can_edit_own_item(self):
-        """内容编辑可编辑自己的文章。"""
+        """内容管理员可编辑自己的文章。"""
         self.client.login(username="wang", password="wang12345")
         self.assertEqual(self.client.get(f"/admin/item/{self.published.id}/edit/").status_code, 200)
 
-    def test_item_create_auto_author_and_publish_time(self):
-        """新建文章：作者自动取当前登录人，发布时未填时间自动取当前时间。"""
+    def test_item_create_publish_action(self):
+        """发布：作者自动取当前登录人，未填时间自动取当前时间。"""
         self.client.login(username="wang", password="wang12345")
         resp = self.client.post("/admin/item/create/", {
             "title": "新文章",
             "content": "正文",
             "category": self.category.id,
-            "status": Item.Status.PUBLISHED,
+            "action": "publish",
             "tags": [self.tag.id],
             "publish_time": "",
         })
         self.assertEqual(resp.status_code, 302)
         item = Item.objects.get(title="新文章")
         self.assertEqual(item.author, self.editor)
+        self.assertEqual(item.status, Item.Status.PUBLISHED)
         self.assertIsNotNone(item.publish_time)
         self.assertTrue(Item.objects.filter(id=item.id, tags=self.tag).exists())
+
+    def test_item_create_draft_action_keeps_publish_time(self):
+        """存草稿：状态为草稿但保留发表时间，且可输入新标签自动创建。"""
+        self.client.login(username="wang", password="wang12345")
+        resp = self.client.post("/admin/item/create/", {
+            "title": "新增草稿文章",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "draft",
+            "publish_time": "2026-12-31T08:00",
+            "new_tags": "交通、智慧城市",
+        })
+        self.assertEqual(resp.status_code, 302)
+        item = Item.objects.get(title="新增草稿文章")
+        self.assertEqual(item.status, Item.Status.DRAFT)
+        self.assertIsNotNone(item.publish_time)
+        self.assertEqual(item.author, self.editor)
+        self.assertEqual(set(item.tags.values_list("name", flat=True)), {"交通", "智慧城市"})
 
     def test_anonymous_favorite_redirects_to_login(self):
         resp = self.client.post(f"/favorite/toggle/{self.published.id}/")

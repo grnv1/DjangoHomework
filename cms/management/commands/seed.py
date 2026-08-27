@@ -43,18 +43,25 @@ class Command(BaseCommand):
         # ---------- 文章 ----------
         now = timezone.now()
         articles = [
-            # (标题, 栏目, 标签, 作者, 发表时间)；发表时间为 None 表示草稿
-            ("交大轨道交通新型轴承技术取得阶段性突破", "科研成果", "科研", editor,
+            # (标题, 栏目, 标签列表, 作者, 发表时间)；发表时间为 None 表示草稿
+            ("交大轨道交通新型轴承技术取得阶段性突破", "科研成果", ["科研"], editor,
              now - timedelta(days=8)),
-            ("智能交通系统在城市道路中的应用研究", "科研成果", "科研", editor,
+            ("智能交通系统在城市道路中的应用研究", "科研成果", ["科研"], editor,
              now - timedelta(days=16)),
-            ("2026年秋季学期本科教学安排", "教学动态", None, admin, now - timedelta(days=3)),
+            ("2026年秋季学期本科教学安排", "教学动态", [], admin, now - timedelta(days=3)),
             # 定时发布：发表时间为未来时间
-            ("2026年硕士研究生招生简章", "校园通知", "招生", admin, now + timedelta(days=5)),
+            ("2026年硕士研究生招生简章", "校园通知", ["招生"], admin, now + timedelta(days=5)),
             # 草稿：发表时间为空
-            ("大学生就业指导讲座预告（草稿）", "校园通知", "就业", editor, None),
+            ("大学生就业指导讲座预告（草稿）", "校园通知", ["就业"], editor, None),
+            # 一篇文章可关联多个标签（关键词）
+            ("轨道交通领域产学研协同育人模式研究", "科研成果", ["科研", "就业"], editor,
+             now - timedelta(days=5)),
+            ("研究生招生政策与就业前景解读", "校园通知", ["招生", "就业"], admin,
+             now - timedelta(days=2)),
+            ("2026届毕业生求职与深造策略分析", "教学动态", ["就业", "科研"], editor,
+             now - timedelta(days=1)),
         ]
-        for title, category_name, tag_name, author, publish_time in articles:
+        for title, category_name, tag_names, author, publish_time in articles:
             item, created = Item.objects.get_or_create(
                 title=title,
                 defaults={
@@ -68,14 +75,14 @@ class Command(BaseCommand):
                 },
             )
             if created:
-                if tag_name:
+                for tag_name in tag_names:
                     item.tags.add(tags[tag_name])
                 description = f"创建文章《{item.title}》"
                 OperationLog.log(author, OperationLog.Action.CREATE, item, description)
 
         self.stdout.write(self.style.SUCCESS("示例数据创建完成。"))
         self.stdout.write("超级管理员：admin / admin12345")
-        self.stdout.write("内容编辑：wang / wang12345")
+        self.stdout.write("内容管理员：wang / wang12345")
         self.stdout.write("普通用户：zhangsan / zhangsan123")
 
     def _create_user(self, username, password, email, role):

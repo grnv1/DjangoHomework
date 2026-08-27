@@ -14,7 +14,7 @@
             <span class="admin-site-name">CMS 管理后台</span>
             <nav class="nav">
                 <span style="font-size:13px;color:#90a4ae;">
-                    {{ user.username }}{% if user.is_superuser %}（超级管理员）{% else %}（内容编辑）{% endif %}
+                    {{ user.username }}{% if user.is_superuser %}（超级管理员）{% else %}（内容管理员）{% endif %}
                 </span>
                 <a href="{% url 'cms:item_list' %}">返回前台</a>
                 <form method="post" action="{% url 'cms:logout' %}" style="display:inline;">

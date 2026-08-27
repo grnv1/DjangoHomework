@@ -1,5 +1,7 @@
 """表单定义：注册、栏目、文章、后台用户管理等。"""
 
+import re
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
@@ -9,7 +11,7 @@ from .models import Category, Item
 # 后台用户角色选项
 ROLE_CHOICES = [
     ("user", "普通用户"),
-    ("editor", "内容编辑"),
+    ("editor", "内容管理员"),
     ("superuser", "超级管理员"),
 ]
 
@@ -24,13 +26,13 @@ def get_role(user):
 
 
 def apply_role(user, role):
-    """按角色设置权限字段并维护"内容编辑"用户组。
+    """按角色设置权限字段并维护"内容管理员"用户组。
 
-    权限设计：超级管理员（is_superuser）、内容编辑（is_staff + 用户组）、普通用户。
+    权限设计：超级管理员（is_superuser）、内容管理员（is_staff + 用户组）、普通用户。
     """
     user.is_staff = role in ("editor", "superuser")
     user.is_superuser = role == "superuser"
-    group, _ = Group.objects.get_or_create(name="内容编辑")
+    group, _ = Group.objects.get_or_create(name="内容管理员")
     if role == "editor":
         user.groups.add(group)
     else:
@@ -49,18 +51,28 @@ class CategoryForm(forms.ModelForm):
 
 
 class ItemForm(forms.ModelForm):
-    """文章表单：标题、正文、栏目、标签、状态、发表时间、作者。"""
+    """文章表单：标题、正文、栏目、标签、发表时间、作者。
+
+    标签支持勾选已有标签，也可直接输入新标签名（保存时自动创建并关联）。
+    状态与发表时间由视图根据"存草稿 / 发布"动作统一处理。
+    """
+
+    new_tags = forms.CharField(
+        required=False,
+        label="新增标签（可选）",
+        widget=forms.TextInput(attrs={"placeholder": "例如：交通、智慧城市"}),
+    )
 
     class Meta:
         model = Item
-        fields = ["title", "content", "category", "tags", "status", "publish_time", "author"]
+        fields = ["title", "content", "category", "tags", "publish_time", "author"]
         widgets = {
             "content": forms.Textarea(attrs={"rows": 14}),
             # datetime-local 输入框，值为 ISO 格式 %Y-%m-%dT%H:%M
             "publish_time": forms.DateTimeInput(
                 attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
             ),
-            "tags": forms.SelectMultiple(attrs={"size": 6}),
+            "tags": forms.CheckboxSelectMultiple(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -68,6 +80,11 @@ class ItemForm(forms.ModelForm):
         # 发表时间可空：草稿时为空，发布时为空则由视图自动取当前时间
         self.fields["publish_time"].required = False
         self.fields["author"].label = "作者"
+
+    def get_new_tag_names(self):
+        """解析"新增标签"输入：按逗号 / 顿号 / 空白分隔并去除空项。"""
+        raw = self.cleaned_data.get("new_tags", "")
+        return [name for name in re.split(r"[,，、;；\s]+", raw) if name]
 
 
 class RegisterForm(UserCreationForm):
@@ -89,7 +106,7 @@ class RegisterForm(UserCreationForm):
 
 
 class UserCreateForm(forms.ModelForm):
-    """后台新建用户表单：可创建普通用户 / 内容编辑 / 超级管理员。"""
+    """后台新建用户表单：可创建普通用户 / 内容管理员 / 超级管理员。"""
 
     role = forms.ChoiceField(choices=ROLE_CHOICES, label="角色")
     password = forms.CharField(widget=forms.PasswordInput, label="密码")

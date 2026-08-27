@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from cms.forms import CategoryForm, ItemForm, UserCreateForm, UserEditForm, get_role
-from cms.models import Category, Item, OperationLog
+from cms.models import Category, Item, OperationLog, Tag
 from cms.utils import (
     paginate,
     query_string_without_page,
@@ -19,11 +19,20 @@ from cms.utils import (
 
 @staff_required
 def dashboard(request):
-    """后台首页：统计概览。"""
-    items = Item.objects.all()
+    """后台首页：统计概览。
+
+    统计范围与文章管理一致：超级管理员见全部，内容管理员仅见自己创建的文章。
+    """
+    items = _get_manageable_items(request.user)
+    now = timezone.now()
     return render(request, "cms/admin/dashboard.html", {
         "total_items": items.count(),
-        "published_items": items.filter(status=Item.Status.PUBLISHED).count(),
+        "published_items": items.filter(
+            status=Item.Status.PUBLISHED, publish_time__lte=now
+        ).count(),
+        "scheduled_items": items.filter(
+            status=Item.Status.PUBLISHED, publish_time__gt=now
+        ).count(),
         "draft_items": items.filter(status=Item.Status.DRAFT).count(),
         "total_categories": Category.objects.count(),
     })
@@ -94,7 +103,7 @@ def category_delete(request, id):
 # ------------------------------ 文章管理 ------------------------------
 
 def _get_manageable_items(user):
-    """管理端可见文章：超级管理员全部，内容编辑仅本人创建。"""
+    """管理端可见文章：超级管理员全部，内容管理员仅本人创建。"""
     qs = Item.objects.select_related("category", "author")
     if not user.is_superuser:
         qs = qs.filter(author=user)
@@ -102,9 +111,30 @@ def _get_manageable_items(user):
 
 
 def _check_item_permission(request, item):
-    """内容编辑仅能操作自己创建的文章，否则 403。"""
+    """内容管理员仅能操作自己创建的文章，否则 403。"""
     if not request.user.is_superuser and item.author_id != request.user.id:
         raise PermissionDenied
+
+
+def _apply_item_action(obj, action):
+    """按提交动作设置文章状态与发表时间。
+
+    draft（存草稿）：状态置为草稿，保留已填写的发表时间（便于下次发布）；
+    publish（发布）：状态置为已发布，发表时间为空则自动取当前时间。
+    """
+    if action == "draft":
+        obj.status = Item.Status.DRAFT
+    else:
+        obj.status = Item.Status.PUBLISHED
+        if not obj.publish_time:
+            obj.publish_time = timezone.now()
+
+
+def _add_new_tags(form, item):
+    """创建表单中输入的新标签并关联到文章。"""
+    for name in form.get_new_tag_names():
+        tag, _ = Tag.objects.get_or_create(name=name)
+        item.tags.add(tag)
 
 
 @staff_required
@@ -132,7 +162,7 @@ def item_list(request):
 
 @staff_required
 def item_create(request):
-    """新建文章：内容编辑作者锁定为本人，超管可指定作者。"""
+    """新建文章：内容管理员作者锁定为本人，超管可指定作者。"""
     initial = {}
     if request.method == "GET" and request.user.is_superuser:
         initial = {"author": request.user}
@@ -144,11 +174,10 @@ def item_create(request):
         obj.created_by = request.user
         obj.updated_by = request.user
         obj.author = form.cleaned_data.get("author") or request.user
-        # 发布时若未设置发表时间，自动取当前时间
-        if obj.status == Item.Status.PUBLISHED and not obj.publish_time:
-            obj.publish_time = timezone.now()
+        _apply_item_action(obj, request.POST.get("action"))
         obj.save()
         form.save_m2m()
+        _add_new_tags(form, obj)
         OperationLog.log(request.user, OperationLog.Action.CREATE, obj, f"创建文章《{obj.title}》")
         messages.success(request, "文章创建成功。")
         return redirect("admin_cms:item_list")
@@ -161,7 +190,7 @@ def item_create(request):
 
 @staff_required
 def item_edit(request, id):
-    """编辑文章：内容编辑仅可编辑自己创建的文章。"""
+    """编辑文章：内容管理员仅可编辑自己创建的文章。"""
     obj = get_object_or_404(Item, id=id)
     _check_item_permission(request, obj)
     form = ItemForm(request.POST or None, instance=obj)
@@ -172,11 +201,10 @@ def item_edit(request, id):
         obj.updated_by = request.user
         if not request.user.is_superuser:
             obj.author_id = request.user.id  # 防止越权篡改作者
-        # 发布时若未设置发表时间，自动取当前时间
-        if obj.status == Item.Status.PUBLISHED and not obj.publish_time:
-            obj.publish_time = timezone.now()
+        _apply_item_action(obj, request.POST.get("action"))
         obj.save()
         form.save_m2m()
+        _add_new_tags(form, obj)
         OperationLog.log(request.user, OperationLog.Action.UPDATE, obj, f"更新文章《{obj.title}》")
         messages.success(request, "文章更新成功。")
         return redirect("admin_cms:item_list")
@@ -211,7 +239,7 @@ def user_list(request):
 
 @superuser_required
 def user_create(request):
-    """新建用户：可创建普通用户 / 内容编辑 / 超级管理员。"""
+    """新建用户：可创建普通用户 / 内容管理员 / 超级管理员。"""
     if request.method == "POST":
         form = UserCreateForm(request.POST)
         if form.is_valid():

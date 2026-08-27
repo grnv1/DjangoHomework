@@ -9,7 +9,7 @@
         <a href="{% url 'admin_cms:user_create' %}" class="btn btn-primary">＋ 新建用户</a>
     </div>
 
-    <div class="perm-note">本页面仅超级管理员可见。可创建普通用户与内容编辑账号。</div>
+    <div class="perm-note">本页面仅超级管理员可见。可创建普通用户与内容管理员账号。</div>
 
     <table class="admin-table">
         <tr>
@@ -29,7 +29,7 @@
                 {% if u.is_superuser %}
                 <span class="status-badge status-published">超级管理员</span>
                 {% elif u.is_staff %}
-                <span class="status-badge status-published">内容编辑</span>
+                <span class="status-badge status-published">内容管理员</span>
                 {% else %}
                 <span class="status-badge status-draft">普通用户</span>
                 {% endif %}

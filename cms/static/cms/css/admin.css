@@ -103,6 +103,25 @@
     font-family: inherit;
 }
 .admin-form textarea { min-height: 220px; resize: vertical; }
+.admin-form input[type="checkbox"] {
+    width: auto;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+/* 标签勾选列表：自适应网格，标签多时分列排列 */
+.admin-form .form-group div[id^="id_tags"] {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px 16px;
+}
+.admin-form .form-group div[id^="id_tags"] > div {
+    display: inline-flex;
+    align-items: center;
+}
+.admin-form .form-group div[id^="id_tags"] label { margin-bottom: 0; }
 .admin-form .form-group { margin-bottom: 16px; }
 .form-help { font-size: 12px; color: var(--text-light); margin-top: 4px; }
 .form-actions { display: flex; gap: 10px; }
