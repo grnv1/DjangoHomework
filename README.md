@@ -69,7 +69,7 @@ DjangoProject/
 │   ├── static/cms/         # 静态资源（CSS）
 │   └── management/commands/seed.py  # 示例数据脚本
 ├── docs/                   # 需求文档、接口文档
-├── prototype/              # 静态页面原型
+├── prototype/              # 静态页面原型（已废弃，仅历史参考，见 prototype/README.md）
 └── ruff.toml               # PEP 8 检查配置
 ```
 
@@ -109,4 +109,4 @@ python manage.py test cms   # 运行单元测试
 
 - `docs/需求文档.md`：需求说明与数据模型设计
 - `docs/接口文档.md`：接口与路由说明
-- `prototype/`：页面静态原型
+- `prototype/`：页面静态原型（已废弃，正式页面以 `cms/templates/cms/` 的真实模板为准）
