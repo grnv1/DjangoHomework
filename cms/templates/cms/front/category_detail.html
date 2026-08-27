@@ -14,6 +14,7 @@
     {% include "cms/front/_search_form.html" %}
 
     <div class="alert">本栏目共找到 {{ page_obj.paginator.count }} 条结果。</div>
+    {% include "cms/_page_size_selector.html" %}
 
     {% for item in page_obj %}
     <article class="item-card">

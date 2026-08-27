@@ -1,0 +1,14 @@
+{% load i18n %}
+<form class="page-size-form" method="get" action="{{ action_url|default:request.path }}">
+    {% for key, value in request.GET.items %}
+        {% if key != "page_size" and key != "page" %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endif %}
+    {% endfor %}
+    <label for="page_size">每页显示</label>
+    <select id="page_size" name="page_size" onchange="this.form.submit()">
+        {% for n in page_size_choices %}
+        <option value="{{ n }}" {% if n == page_obj.paginator.per_page %}selected{% endif %}>{{ n }} 条</option>
+        {% endfor %}
+    </select>
+</form>

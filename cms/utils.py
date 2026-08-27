@@ -3,6 +3,7 @@
 import secrets
 from functools import wraps
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
@@ -119,8 +120,21 @@ def build_search_queryset(request, base_qs=None):
 
 
 def paginate(request, queryset, per_page):
-    """按页码分页，返回 Paginator 页面对象。"""
-    return Paginator(queryset, per_page).get_page(request.GET.get("page"))
+    """按页码分页，返回 Paginator 页面对象。
+
+    可通过 ?page_size=N 覆盖每页条数，仅接受 settings.PAGE_SIZE_CHOICES
+    白名单内的正整数，非法值回退到 per_page。
+    """
+    size = per_page
+    raw = request.GET.get("page_size")
+    if raw is not None:
+        try:
+            size = int(raw)
+        except (TypeError, ValueError):
+            size = per_page
+    if size not in getattr(settings, "PAGE_SIZE_CHOICES", ()):
+        size = per_page
+    return Paginator(queryset, size).get_page(request.GET.get("page"))
 
 
 def query_string_without_page(request):

@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from cms.forms import apply_role
-from cms.models import Category, Item, OperationLog, Tag
+from cms.models import Category, Favorite, Item, OperationLog, Tag
 
 
 class Command(BaseCommand):
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         # ---------- 用户 ----------
         admin = self._create_user("admin", "admin12345", "admin@bjtu.edu.cn", "superuser")
         editor = self._create_user("wang", "wang12345", "wang@bjtu.edu.cn", "editor")
-        self._create_user("zhangsan", "zhangsan123", "zhangsan@example.com", "user")
+        zhangsan = self._create_user("zhangsan", "zhangsan123", "zhangsan@example.com", "user")
 
         # ---------- 栏目 ----------
         category_data = [
@@ -80,7 +80,40 @@ class Command(BaseCommand):
                 description = f"创建文章《{item.title}》"
                 OperationLog.log(author, OperationLog.Action.CREATE, item, description)
 
+        # ---------- 批量生成文章，便于测试分页 ----------
+        category_names = list(categories)
+        tag_names_list = list(tags)
+        batch_count = 30
+        for i in range(1, batch_count + 1):
+            title = f"分页测试文章 {i:02d}"
+            category_name = category_names[i % len(category_names)]
+            author = editor if i % 2 else admin
+            publish_time = now - timedelta(days=i)
+            item, created = Item.objects.get_or_create(
+                title=title,
+                defaults={
+                    "content": f"这是用于验证分页效果的测试文章《{title}》。",
+                    "category": categories[category_name],
+                    "author": author,
+                    "created_by": author,
+                    "updated_by": author,
+                    "status": Item.Status.PUBLISHED,
+                    "publish_time": publish_time,
+                    "views": i * 7 % 100,
+                },
+            )
+            if created:
+                item.tags.add(tags[tag_names_list[i % len(tag_names_list)]])
+                OperationLog.log(author, OperationLog.Action.CREATE, item, f"创建文章《{title}》")
+
+        # ---------- 为普通用户 zhangsan 添加收藏 ----------
+        fav_targets = Item.objects.filter(status=Item.Status.PUBLISHED).order_by("-publish_time")[:5]
+        for item in fav_targets:
+            Favorite.objects.get_or_create(user=zhangsan, item=item)
+
         self.stdout.write(self.style.SUCCESS("示例数据创建完成。"))
+        self.stdout.write(f"已生成 {Item.objects.count()} 篇文章，其中可见（已发布且已到时间）"
+                          f"{sum(1 for it in Item.objects.all() if it.is_visible())} 篇。")
         self.stdout.write("超级管理员：admin / admin12345")
         self.stdout.write("内容管理员：wang / wang12345")
         self.stdout.write("普通用户：zhangsan / zhangsan123")

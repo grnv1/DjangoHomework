@@ -65,6 +65,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cms.context_processors.pagination",
             ],
         },
     },
@@ -123,3 +124,5 @@ STATIC_URL = "static/"
 # 分页条数（默认值，可在此修改）
 PAGE_SIZE = 10          # 前台每页文章数
 ADMIN_PAGE_SIZE = 20    # 后台列表每页条数
+# 前端可选每页条数白名单，用户通过 ?page_size=N 覆盖默认值，仅允许以下值
+PAGE_SIZE_CHOICES = (10, 20, 50, 100)

@@ -237,3 +237,36 @@ class CmsViewTests(TestCase):
         user = User.objects.get(username="lisi")
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
+
+    def test_page_size_controls_items_per_page(self):
+        """page_size 白名单内生效，非法值回退默认。"""
+        for i in range(12):
+            self._item(f"分页文章{i}", publish_time=self.now - timedelta(days=1))
+        url = reverse("cms:item_list")
+        self.assertEqual(self.client.get(url).context["page_obj"].paginator.per_page, 10)
+        self.assertEqual(
+            self.client.get(url, {"page_size": "20"}).context["page_obj"].paginator.per_page, 20
+        )
+        self.assertEqual(
+            self.client.get(url, {"page_size": "50"}).context["page_obj"].paginator.per_page, 50
+        )
+        # 超出白名单与非数字均回退默认值
+        self.assertEqual(
+            self.client.get(url, {"page_size": "999"}).context["page_obj"].paginator.per_page, 10
+        )
+        self.assertEqual(
+            self.client.get(url, {"page_size": "abc"}).context["page_obj"].paginator.per_page, 10
+        )
+
+    def test_pagination_links_preserve_page_size(self):
+        """翻页链接保留用户选择的 page_size。"""
+        for i in range(15):
+            self._item(f"分页文章{i}", publish_time=self.now - timedelta(days=1))
+        resp = self.client.get(reverse("cms:item_list"), {"page_size": "10"})
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "page_size=10")
+
+    def test_well_known_probe_returns_quiet(self):
+        """浏览器/调试工具探测 .well-known/ 路径应静默返回，不再 404。"""
+        resp = self.client.get("/.well-known/appspecific/com.chrome.devtools.json")
+        self.assertEqual(resp.status_code, 204)

@@ -8,6 +8,8 @@
         <h2>我的收藏（{{ page_obj.paginator.count }} 篇）</h2>
     </section>
 
+    {% include "cms/_page_size_selector.html" %}
+
     {% for fav in page_obj %}
     <article class="item-card">
         <h3><a href="{% url 'cms:item_detail' fav.item.id %}">{{ fav.item.title }}</a></h3>
