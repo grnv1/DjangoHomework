@@ -164,13 +164,9 @@ def item_list(request):
 
 @staff_required
 def item_create(request):
-    """新建文章：内容管理员作者锁定为本人，超管可指定作者。"""
-    initial = {}
-    if request.method == "GET" and request.user.is_superuser:
-        initial = {"author": request.user}
-    form = ItemForm(request.POST or None, initial=initial)
-    if not request.user.is_superuser:
-        form.fields.pop("author")
+    """新建文章：作者默认为当前登录人，不可指定或修改。"""
+    form = ItemForm(request.POST or None)
+    form.fields.pop("author")
     if request.method == "POST" and form.is_valid():
         if not consume_form_token(request, request.POST.get("submit_token")):
             # 令牌已使用：拦截重复提交，避免创建重复文章
@@ -179,7 +175,7 @@ def item_create(request):
         obj = form.save(commit=False)
         obj.created_by = request.user
         obj.updated_by = request.user
-        obj.author = form.cleaned_data.get("author") or request.user
+        obj.author = request.user
         _apply_item_action(obj, request.POST.get("action"))
         obj.save()
         form.save_m2m()
@@ -191,18 +187,30 @@ def item_create(request):
         "form": form,
         "title": "新建文章",
         "is_editor": not request.user.is_superuser,
+        "is_published": False,
         "submit_token": generate_form_token(request),
     })
 
 
 @staff_required
 def item_edit(request, id):
-    """编辑文章：内容管理员仅可编辑自己创建的文章。"""
+    """编辑文章：内容管理员仅可编辑自己创建的文章。
+
+    已发布文章：发布时间锁定不可改，且只能「重新发布」（强制按发布处理，
+    忽略存草稿动作，防止已发布文章退回草稿）；草稿文章：时间可修改。
+    """
     obj = get_object_or_404(Item, id=id)
     _check_item_permission(request, obj)
+    is_published = obj.status == Item.Status.PUBLISHED
+    # 已发布文章只能「重新发布」，忽略存草稿动作，防止已发布文章退回草稿；
+    # 需在创建表单前改写，保证表单校验按 publish 处理
+    if is_published and request.method == "POST" and (request.POST or {}).get("action") == "draft":
+        request.POST = request.POST.copy()
+        request.POST["action"] = "publish"
     form = ItemForm(request.POST or None, instance=obj)
-    if not request.user.is_superuser:
-        form.fields.pop("author")
+    form.fields.pop("author")
+    if is_published:
+        form.fields["publish_time"].disabled = True
     if request.method == "POST" and form.is_valid():
         if not consume_form_token(request, request.POST.get("submit_token")):
             # 令牌已使用：拦截重复提交，避免重复保存与重复记日志
@@ -210,8 +218,6 @@ def item_edit(request, id):
             return redirect("admin_cms:item_list")
         obj = form.save(commit=False)
         obj.updated_by = request.user
-        if not request.user.is_superuser:
-            obj.author_id = request.user.id  # 防止越权篡改作者
         _apply_item_action(obj, request.POST.get("action"))
         obj.save()
         form.save_m2m()
@@ -223,6 +229,7 @@ def item_edit(request, id):
         "form": form,
         "title": "编辑文章",
         "is_editor": not request.user.is_superuser,
+        "is_published": is_published,
         "submit_token": generate_form_token(request),
     })
 

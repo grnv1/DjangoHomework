@@ -37,7 +37,14 @@
             <div class="form-group">
                 <label for="id_publish_time">发表时间</label>
                 {{ form.publish_time }}
-                <p class="form-help">发布时留空将自动取当前时间；可填写未来时间定时发布。存草稿会保留此时间。</p>
+                {% if form.publish_time.errors %}<div class="form-error">{{ form.publish_time.errors }}</div>{% endif %}
+                <p class="form-help">
+                    {% if is_published %}
+                    已发布文章发布时间不可修改，仅可重新发布。
+                    {% else %}
+                    发布时留空将自动取当前时间；发布时间不能早于当前时间；可填写未来时间定时发布。存草稿会保留此时间。
+                    {% endif %}
+                </p>
             </div>
             <div class="form-group">
                 <label for="id_content">正文内容</label>
@@ -54,8 +61,12 @@
             </div>
             {% endif %}
             <div class="form-actions">
+                {% if is_published %}
+                <button type="submit" name="action" value="publish" class="btn btn-primary">重新发布</button>
+                {% else %}
                 <button type="submit" name="action" value="draft" class="btn btn-outline">存草稿</button>
                 <button type="submit" name="action" value="publish" class="btn btn-primary">发布</button>
+                {% endif %}
                 <a href="{% url 'admin_cms:item_list' %}" class="btn btn-outline">取消</a>
             </div>
         </form>

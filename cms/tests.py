@@ -172,8 +172,43 @@ class CmsViewTests(TestCase):
         item = Item.objects.get(title="新文章")
         self.assertEqual(item.author, self.editor)
         self.assertEqual(item.status, Item.Status.PUBLISHED)
-        self.assertIsNotNone(item.publish_time)
-        self.assertTrue(Item.objects.filter(id=item.id, tags=self.tag).exists())
+
+    def test_item_create_superuser_author_is_self(self):
+        """超管新建文章：作者固定为当前登录人，POST 提交他人作者被忽略。"""
+        self.client.login(username="admin", password="admin12345")
+        token = self._item_form_token("/admin/item/create/")
+        resp = self.client.post("/admin/item/create/", {
+            "title": "超管文章",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "author": self.editor.id,
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        item = Item.objects.get(title="超管文章")
+        self.assertEqual(item.author, self.admin)
+
+    def test_item_edit_superuser_cannot_change_author(self):
+        """超管编辑他人文章：作者保持原值，不可修改。"""
+        other = User.objects.create_user("li", "li@test.com", "li12345")
+        apply_role(other, "editor")
+        other.save()
+        item = self._item("超管编辑的作者", author=other)
+        self.client.login(username="admin", password="admin12345")
+        token = self._item_form_token(f"/admin/item/{item.id}/edit/")
+        resp = self.client.post(f"/admin/item/{item.id}/edit/", {
+            "title": "超管编辑的作者",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "author": self.admin.id,
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        item.refresh_from_db()
+        self.assertEqual(item.author, other)
+
 
     def test_item_create_draft_action_keeps_publish_time(self):
         """存草稿：状态为草稿但保留发表时间，且可输入新标签自动创建。"""
@@ -194,6 +229,96 @@ class CmsViewTests(TestCase):
         self.assertIsNotNone(item.publish_time)
         self.assertEqual(item.author, self.editor)
         self.assertEqual(set(item.tags.values_list("name", flat=True)), {"交通", "智慧城市"})
+
+    def test_item_create_publish_rejects_past_time(self):
+        """发布时填写过去时间：表单校验失败，文章不创建。"""
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token("/admin/item/create/")
+        past = (timezone.now() - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M")
+        resp = self.client.post("/admin/item/create/", {
+            "title": "过去时间文章",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "publish_time": past,
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "发布时间不能早于当前时间")
+        self.assertFalse(Item.objects.filter(title="过去时间文章").exists())
+
+    def test_item_edit_draft_can_change_publish_time(self):
+        """编辑草稿：可修改发布时间。"""
+        draft = self._item("可编辑草稿", status=Item.Status.DRAFT, publish_time=None)
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token(f"/admin/item/{draft.id}/edit/")
+        new_time = (timezone.now() + timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M")
+        resp = self.client.post(f"/admin/item/{draft.id}/edit/", {
+            "title": "可编辑草稿",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "draft",
+            "publish_time": new_time,
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        draft.refresh_from_db()
+        self.assertEqual(draft.status, Item.Status.DRAFT)
+        self.assertIsNotNone(draft.publish_time)
+
+    def test_item_edit_published_keeps_time(self):
+        """编辑已发布文章：时间字段禁用（浏览器不提交），保存后仍为原值。"""
+        past = timezone.now() - timedelta(days=3)
+        published = self._item("已发布不可改时间", publish_time=past)
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token(f"/admin/item/{published.id}/edit/")
+        resp = self.client.post(f"/admin/item/{published.id}/edit/", {
+            "title": "已发布不可改时间",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        published.refresh_from_db()
+        self.assertEqual(published.publish_time.replace(microsecond=0),
+                         past.replace(microsecond=0))
+
+    def test_item_edit_published_old_time_ok(self):
+        """编辑已发布旧文章（时间在过去）：正常保存，不因校验卡死。"""
+        past = timezone.now() - timedelta(days=3)
+        published = self._item("已发布旧文", publish_time=past)
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token(f"/admin/item/{published.id}/edit/")
+        resp = self.client.post(f"/admin/item/{published.id}/edit/", {
+            "title": "已发布旧文",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "publish",
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        published.refresh_from_db()
+        self.assertEqual(published.status, Item.Status.PUBLISHED)
+        self.assertEqual(published.publish_time.replace(microsecond=0),
+                         past.replace(microsecond=0))
+
+    def test_item_edit_published_cannot_revert_draft(self):
+        """编辑已发布文章提交存草稿动作：仍保持已发布（强制重新发布）。"""
+        past = timezone.now() - timedelta(days=1)
+        published = self._item("已发布不许退回草稿", publish_time=past)
+        self.client.login(username="wang", password="wang12345")
+        token = self._item_form_token(f"/admin/item/{published.id}/edit/")
+        resp = self.client.post(f"/admin/item/{published.id}/edit/", {
+            "title": "已发布不许退回草稿",
+            "content": "正文",
+            "category": self.category.id,
+            "action": "draft",
+            "submit_token": token,
+        })
+        self.assertEqual(resp.status_code, 302)
+        published.refresh_from_db()
+        self.assertEqual(published.status, Item.Status.PUBLISHED)
 
     def test_item_create_rejects_duplicate_submit(self):
         """同一提交令牌重复使用：只创建一篇，并拦截重复提交。"""

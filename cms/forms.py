@@ -5,6 +5,7 @@ import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group, User
+from django.utils import timezone
 
 from .models import Category, Item
 
@@ -94,6 +95,25 @@ class ItemForm(forms.ModelForm):
         """解析"新增标签"输入：按逗号 / 顿号 / 空白分隔并去除空项。"""
         raw = self.cleaned_data.get("new_tags", "")
         return [name for name in re.split(r"[,，、;；\s]+", raw) if name]
+
+    def clean_publish_time(self):
+        """校验发布时间：点「发布」时不允许早于当前时间。
+
+        仅当浏览器本次实际提交了 publish_time（raw 非空）时才拦截；
+        编辑已发布文章时该字段被 disabled，浏览器不提交，故校验自动跳过，
+        避免已发布的旧文章（时间在过去）无法保存。
+        """
+        raw = (self.data or {}).get("publish_time", "").strip()
+        publish_time = self.cleaned_data.get("publish_time")
+        action = (self.data or {}).get("action")
+        if (
+            action == "publish"
+            and publish_time
+            and publish_time < timezone.now()
+            and raw
+        ):
+            raise forms.ValidationError("发布时间不能早于当前时间")
+        return publish_time
 
 
 class RegisterForm(UserCreationForm):
