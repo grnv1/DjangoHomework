@@ -280,11 +280,12 @@ def user_edit(request, id):
         if form.is_valid():
             if is_self:
                 # 自保护：强制保持自身为启用的超级管理员
-                form.cleaned_data["is_active"] = True
-                form.cleaned_data["role"] = "superuser"
-            form.save()
-            messages.success(request, "用户更新成功。")
-            return redirect("admin_cms:user_list")
+                if form.cleaned_data["role"] != "superuser" or form.cleaned_data["is_active"] != True:
+                    form.add_error(None, "不能修改自己的角色或启用状态。")
+                else:
+                    form.save()
+                    messages.success(request, "用户更新成功。")
+                    return redirect("admin_cms:user_list")
     else:
         form = UserEditForm(instance=user, initial={"role": get_role(user)})
     return render(request, "cms/admin/user_form.html", {
