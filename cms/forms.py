@@ -4,7 +4,7 @@ import re
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 from .models import Category, Item
@@ -27,17 +27,12 @@ def get_role(user):
 
 
 def apply_role(user, role):
-    """按角色设置权限字段并维护"内容管理员"用户组。
+    """按角色设置权限字段。
 
-    权限设计：超级管理员（is_superuser）、内容管理员（is_staff + 用户组）、普通用户。
+    权限设计：超级管理员（is_superuser）、内容管理员（is_staff）、普通用户。
     """
     user.is_staff = role in ("editor", "superuser")
     user.is_superuser = role == "superuser"
-    group, _ = Group.objects.get_or_create(name="内容管理员")
-    if role == "editor":
-        user.groups.add(group)
-    else:
-        user.groups.remove(group)
 
 
 class CategoryForm(forms.ModelForm):

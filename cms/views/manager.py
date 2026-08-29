@@ -10,12 +10,12 @@ from django.utils import timezone
 from cms.forms import CategoryForm, ItemForm, UserCreateForm, UserEditForm, get_role
 from cms.models import Category, Item, OperationLog, Tag
 from cms.utils import (
+    consume_form_token,
+    generate_form_token,
     paginate,
     query_string_without_page,
     staff_required,
     superuser_required,
-    consume_form_token,
-    generate_form_token,
 )
 
 
@@ -280,7 +280,9 @@ def user_edit(request, id):
         if form.is_valid():
             if is_self:
                 # 自保护：强制保持自身为启用的超级管理员
-                if form.cleaned_data["role"] != "superuser" or form.cleaned_data["is_active"] != True:
+                if (
+                        form.cleaned_data["role"] != "superuser"
+                        or not form.cleaned_data["is_active"]):
                     form.add_error(None, "不能修改自己的角色或启用状态。")
                 else:
                     form.save()

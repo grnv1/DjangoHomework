@@ -107,7 +107,10 @@ class Command(BaseCommand):
                 OperationLog.log(author, OperationLog.Action.CREATE, item, f"创建文章《{title}》")
 
         # ---------- 为普通用户 zhangsan 添加收藏 ----------
-        fav_targets = Item.objects.filter(status=Item.Status.PUBLISHED).order_by("-publish_time")[:5]
+        fav_targets = (
+            Item.objects.filter(status=Item.Status.PUBLISHED)
+            .order_by("-publish_time")[:5]
+        )
         for item in fav_targets:
             Favorite.objects.get_or_create(user=zhangsan, item=item)
 
